@@ -3,35 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lärmprotokoll Professional – Rechtliches & Support</title>
+<title>Lärmprotokoll Professional – Rechtliches (App & Website)</title>
 <link rel="icon" href="./assets/logo.png">
 <meta name="robots" content="index,follow">
-<meta name="description" content="Lärmprotokoll Professional – Rechtliche Informationen, Datenschutz (App & Website), AGB und Support.">
+<meta name="description" content="Lärmprotokoll Professional – einheitliche rechtliche Informationen (Impressum, Datenschutz, AGB, rechtliche Hinweise) für App und Website.">
 <style>
   :root { --maxw: 900px; }
   html { scroll-behavior: smooth; }
-  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.6; margin: 0; color: #111; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.65; margin: 0; color: #111; }
   header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eee; z-index: 10; }
-  .brand { max-width: var(--maxw); margin: 0 auto; padding: .6rem 1rem; display: flex; align-items: center; gap: .8rem; }
+  .brand { max-width: var(--maxw); margin: 0 auto; padding: .8rem 1rem; display: flex; align-items: center; gap: .8rem; }
   .brand img { height: 44px; width: 44px; border-radius: 10px; display: block; }
   .brand-text { line-height: 1; display: flex; flex-direction: column; }
   .brand-title { font-weight: 700; letter-spacing: .02em; }
   .brand-sub { font-size: .8rem; letter-spacing: .18em; }
-  nav { max-width: var(--maxw); margin: 0 auto; display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding: .75rem 1rem; }
-  nav a { text-decoration: none; padding: .4rem .7rem; border-radius: .5rem; border: 1px solid #e5e7eb; }
-  nav a:hover, nav a:focus { background: #f3f4f6; outline: none; }
   main { max-width: var(--maxw); margin: 0 auto; padding: 1rem; }
-  section { padding: 1rem 0 2.5rem; border-bottom: 1px dashed #e5e7eb; }
-  h1 { font-size: 1.6rem; margin: 1.2rem 0 .5rem; }
+  h1 { font-size: 1.7rem; margin: 1.2rem 0 .6rem; }
   h2 { font-size: 1.25rem; margin-top: 1.4rem; }
   h3 { font-size: 1.05rem; margin-top: 1.1rem; }
   .meta { color: #6b7280; font-size: .9rem; }
   .note { background: #f0f9ff; border: 1px solid #bae6fd; padding: .75rem 1rem; border-radius: .5rem; }
+  section { padding: 1rem 0 1.4rem; border-bottom: 1px dashed #e5e7eb; }
   footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1rem; color: #6b7280; }
-  .host-note { font-size: .9rem; color: #374151; }
+
+  /* Consent Banner */
+  #consent-banner {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
+    background: #111827; color: #fff; padding: 1rem;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.2);
+  }
+  #consent-banner .wrap { max-width: var(--maxw); margin: 0 auto; display: grid; gap: .75rem; }
+  #consent-banner p { margin: 0; }
+  #consent-banner .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .btn { border: 1px solid #374151; background: #1f2937; color: #fff; padding: .45rem .8rem; cursor: pointer; border-radius: .5rem; }
+  .btn.primary { background: #2563eb; border-color: #1d4ed8; }
+  .btn:hover { filter: brightness(1.1); }
+
+  /* Consent Modal */
+  #consent-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; z-index: 10000;
+    align-items: center; justify-content: center;
+  }
+  #consent-modal .card {
+    background: #fff; color: #111; max-width: 640px; width: calc(100% - 2rem);
+    border-radius: .8rem; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  #consent-modal h3 { margin: .2rem 0 .6rem; }
+  #consent-modal .row { display: flex; justify-content: space-between; align-items: center; padding: .5rem 0; border-bottom: 1px solid #eee; }
+  #consent-modal .badge { font-size: .8rem; padding: .2rem .4rem; border-radius: .4rem; background: #e5e7eb; }
+  #manage-consent { font-size: .9rem; color: #374151; text-decoration: underline; cursor: pointer; }
 </style>
 </head>
 <body>
+
 <header>
   <div class="brand">
     <img src="./assets/logo.png" alt="Lärmprotokoll Professional – Logo">
@@ -40,115 +64,170 @@
       <span class="brand-sub">PROFESSIONAL</span>
     </div>
   </div>
-  <nav aria-label="Abschnittsnavigation">
-    <a href="#impressum">Impressum</a>
-    <a href="#datenschutz-app">Datenschutz (App)</a>
-    <a href="#datenschutz-website">Datenschutz (Website)</a>
-    <a href="#agb">AGB</a>
-    <a href="#rechtliche-hinweise">Rechtliche Hinweise</a>
-    <a href="#support">Support & FAQ</a>
-  </nav>
 </header>
 
 <main>
 
+<section id="rechtliches">
+  <h1>Rechtliches – Gültig für App & Website</h1>
+  <p class="meta">Stand: 29. Juli 2025</p>
+</section>
+
 <section id="impressum">
-  <h1>Impressum</h1>
-  <p><strong>Lärmprotokoll Professional App</strong></p>
-  <p>Daniel Ovadia<br>Eugen-Richter-Str. 159<br>76187 Karlsruhe<br>Deutschland</p>
-  <p>E-Mail: <a href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a><br>
-  <em>Support ausschließlich per E-Mail – keine Telefon-Hotline.</em></p>
-  <h2>EU‑Streitschlichtung</h2>
-  <p>Plattform der EU-Kommission zur Online-Streitbeilegung (OS): <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>. Unsere E‑Mail finden Sie oben.</p>
-  <p class="meta">Stand: 29. Juli 2025</p>
+  <h2>Impressum</h2>
+  <p><strong>Verantwortlich</strong><br>
+     Daniel Ovadia · Eugen‑Richter‑Str. 159 · 76187 Karlsruhe · Deutschland</p>
+  <p><strong>Kontakt</strong><br>
+     E‑Mail: <a href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a><br>
+     <em>Support ausschließlich per E‑Mail – keine Telefon‑Hotline.</em></p>
+  <p><strong>EU‑Streitschlichtung</strong><br>
+     Plattform der EU‑Kommission zur Online‑Streitbeilegung (OS):
+     <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+  <p><strong>Verbraucherstreitbeilegung</strong><br>
+     Wir sind <u>nicht bereit</u> und <u>nicht verpflichtet</u>, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 </section>
 
-<section id="datenschutz-app">
-  <h1>Datenschutz (App)</h1>
-  <p>Die App verarbeitet Messdaten (Dezibelwerte), Fotos, Videos, Audioaufnahmen, GPS-Daten, Zeitstempel und Notizen ausschließlich lokal auf Ihrem Gerät. Eine Übermittlung an uns erfolgt nicht; Exporte (PDF/JSON/ZIP) erfolgen nur auf Ihre aktive Initiative.</p>
-  <h2>Rechtsgrundlagen der App-Verarbeitung</h2>
-  <ul>
-    <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong> – Vertragserfüllung (Führen eines Lärmprotokolls).</li>
-    <li><strong>Art. 6 Abs. 1 lit. f DSGVO</strong> – berechtigtes Interesse an strukturierter Dokumentation/Beweissicherung.</li>
-  </ul>
-  <h2>Berechtigungen in der App</h2>
-  <ul>
-    <li><strong>Mikrofon/Kamera:</strong> Erstellung von Audio/Fotos/Videos.</li>
-    <li><strong>Standort (präzise):</strong> Zuordnung von Ort/Zeit; Kartenlinks im PDF.</li>
-    <li><strong>Medienauswahl:</strong> ab Android 13 bevorzugt via Photo Picker (ohne Storage‑Berechtigung).</li>
-  </ul>
-  <h2>Hinweise zu Rechten Dritter</h2>
-  <p>Audio-/Videoaufnahmen dürfen nur erfolgen, wenn Rechte Dritter gewahrt sind (insb. allgemeines Persönlichkeitsrecht, <abbr title="§§ 22 ff. KunstUrhG">KUG</abbr> – Recht am eigenen Bild). Sie sind für die Rechtmäßigkeit der Aufnahmen verantwortlich.</p>
-  <p class="meta">Stand: 29. Juli 2025</p>
-</section>
+<section id="datenschutz">
+  <h2>Datenschutz (einheitlich für App & Website)</h2>
+  <h3>Grundsatz</h3>
+  <p>Wir verarbeiten so wenige personenbezogene Daten wie möglich. Die App arbeitet lokal; die Website wird technisch über GitHub Pages bereitgestellt.</p>
 
-<section id="datenschutz-website">
-  <h1>Datenschutz (Website)</h1>
-  <p>Diese Website wird über <strong>GitHub Pages</strong> bereitgestellt. Beim Aufruf der Seiten können serverseitig technisch notwendige Verbindungsdaten verarbeitet werden.</p>
-  <h2>Verantwortlicher für diese Website</h2>
-  <p>Daniel Ovadia (Kontaktdaten siehe <a href="#impressum">Impressum</a>)</p>
-  <h2>Kategorien personenbezogener Daten</h2>
+  <h3>Welche Daten werden verarbeitet?</h3>
   <ul>
-    <li>IP‑Adresse, Datum/Uhrzeit des Zugriffs, aufgerufene URL, Referrer‑URL</li>
-    <li>User‑Agent (Browser/OS), HTTP‑Statuscode, übertragene Datenmenge</li>
+    <li><strong>App (nur lokal):</strong> Messdaten (Dezibelwerte), Audio, Foto/Video, GPS (präziser Standort), Zeitstempel, Notizen, Medien‑Metadaten.</li>
+    <li><strong>Website (Hosting/Logs):</strong> IP‑Adresse, Datum/Uhrzeit, URL, Referrer, User‑Agent, HTTP‑Status, übertragene Datenmenge.</li>
   </ul>
-  <h2>Zwecke und Rechtsgrundlage</h2>
-  <p>Sichere und funktionsfähige Bereitstellung der Website, Abwehr/Störungsanalyse (Legitimate Interest). Rechtsgrundlage: <strong>Art. 6 Abs. 1 lit. f DSGVO</strong>.</p>
-  <h2>Empfänger / Hosting</h2>
-  <p>Hosting durch <strong>GitHub, Inc.</strong> (USA). Datenschutzhinweise: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement</a>. Informationen zu GitHub Pages: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages" target="_blank" rel="noopener">About GitHub Pages</a>.</p>
-  <h2>Drittlandübermittlung</h2>
-  <p>Bei Nutzung von GitHub Pages kann eine Datenübermittlung in die USA erfolgen. GitHub stützt sich u. a. auf das <strong>EU‑US Data Privacy Framework</strong> sowie geeignete Garantien (z. B. Standardvertragsklauseln) gemäß Art. 44 ff. DSGVO.</p>
-  <h2>Speicherdauer</h2>
-  <p>Server‑Logdaten werden grundsätzlich nur solange vorgehalten, wie es für Zweck, Sicherheit und Fehleranalyse erforderlich ist (in der Regel max. 30 Tage), sofern keine längere Aufbewahrung aus Beweisgründen erforderlich ist.</p>
-  <h2>Cookies & Tracking</h2>
-  <p>Wir setzen auf dieser Website keine eigenen Cookies, kein Tracking und keine Analysetools ein. GitHub Pages kann zur technischen Bereitstellung serverseitige Protokolle führen (s. o.).</p>
-  <h2>Betroffenenrechte</h2>
+
+  <h3>Zwecke & Rechtsgrundlagen</h3>
   <ul>
-    <li>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch (Art. 15–21 DSGVO)</li>
-    <li>Beschwerderecht bei einer Aufsichtsbehörde, z. B. LfDI Baden‑Württemberg (<a href="mailto:poststelle@lfdi.bwl.de">poststelle@lfdi.bwl.de</a>)</li>
+    <li><strong>App:</strong> Führen eines Lärmprotokolls, Beweisdokumentation, Export (PDF/JSON/ZIP). Rechtsgrundlagen: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an strukturierter Beweissicherung).</li>
+    <li><strong>Website:</strong> sichere, funktionsfähige Bereitstellung und Störungsanalyse. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse).</li>
   </ul>
-  <p class="meta">Stand: 29. Juli 2025</p>
+
+  <h3>Speicherung & Weitergabe</h3>
+  <ul>
+    <li><strong>App:</strong> Speicherung ausschließlich lokal bis zur Löschung durch den Nutzer. Keine automatische Übermittlung an uns; Exporte nur auf aktive Initiative.</li>
+    <li><strong>Website/Hosting:</strong> GitHub Pages (GitHub, Inc., USA); mögliche Drittlandübermittlung unter EU‑US Data Privacy Framework / Standardvertragsklauseln (Art. 44 ff. DSGVO). Server‑Logs werden i. d. R. nur solange gespeichert, wie für Betrieb/Sicherheit/Fehleranalyse erforderlich.</li>
+  </ul>
+
+  <h3>Berechtigungen & Hinweise (App)</h3>
+  <ul>
+    <li>Mikrofon/Kamera/Standort werden nur für Audio, Foto/Video, GPS‑Zuordnung genutzt. Ab Android 13 wird der Photo Picker für Medienauswahl empfohlen.</li>
+    <li>Beachten Sie die Rechte Dritter (Persönlichkeitsrecht, Recht am eigenen Bild gemäß §§ 22 ff. KUG).</li>
+  </ul>
+
+  <h3>Cookies/Tracking (Website)</h3>
+  <p>Wir setzen keine eigenen Cookies, kein Tracking und keine Analysetools ein. GitHub kann zur technischen Bereitstellung serverseitige Protokolle führen.</p>
+
+  <h3>Betroffenenrechte</h3>
+  <p>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch (Art. 15–21 DSGVO) sowie Beschwerderecht (z. B. LfDI Baden‑Württemberg, <a href="mailto:poststelle@lfdi.bwl.de">poststelle@lfdi.bwl.de</a>).</p>
 </section>
 
 <section id="agb">
-  <h1>Allgemeine Geschäftsbedingungen (AGB)</h1>
-  <h2>Vertragsgegenstand</h2>
-  <p>Die App dient der professionellen Messung und Dokumentation von Lärm. Keine Rechtsberatung. Keine Zusicherung gerichtlicher Verwertbarkeit.</p>
-  <h2>Datenverarbeitung durch den Nutzer</h2>
-  <p>Der Nutzer entscheidet, welche Daten (Audio/Fotos/Videos/GPS/Notizen) erfasst. Speicherung ausschließlich lokal; der Anbieter hat keinen Zugriff. Der Nutzer ist für die Rechtmäßigkeit von Aufnahmen selbst verantwortlich (Persönlichkeitsrecht, §§ 22 ff. KUG).</p>
-  <h2>Widerrufsrecht</h2>
-  <p>Bei digitalen Inhalten erlischt das Widerrufsrecht, wenn der Nutzer der sofortigen Ausführung zustimmt (§ 356 Abs. 5 BGB). In‑App‑Käufe werden über den jeweiligen App‑Store abgewickelt; es gelten die Store‑Bedingungen.</p>
-  <h2>Haftung</h2>
+  <h2>Allgemeine Geschäftsbedingungen</h2>
+  <h3>Vertragsgegenstand</h3>
+  <p>Die App dient der professionellen Messung und Dokumentation von Lärm. Keine Rechtsberatung; keine Zusicherung gerichtlicher Verwertbarkeit.</p>
+
+  <h3>Verantwortung des Nutzers</h3>
+  <p>Sie entscheiden, welche Inhalte (Audio/Fotos/Videos/GPS/Notizen) Sie erfassen und exportieren. Speicherung erfolgt lokal; wir haben keinen Zugriff. Sie sind für die Rechtmäßigkeit Ihrer Aufnahmen verantwortlich (insb. §§ 22 ff. KUG).</p>
+
+  <h3>Widerruf (digitale Inhalte)</h3>
+  <p>Das Widerrufsrecht erlischt, wenn Sie der sofortigen Ausführung zustimmen (§ 356 Abs. 5 BGB). In‑App‑Käufe werden über den jeweiligen App‑Store abgewickelt; es gelten die Store‑Bedingungen.</p>
+
+  <h3>Haftung</h3>
   <p>Unbeschränkte Haftung bei Verletzung von Leben, Körper, Gesundheit. Im Übrigen Haftung nur für Vorsatz und grobe Fahrlässigkeit.</p>
-  <p class="meta">Stand: 29. Juli 2025</p>
 </section>
 
 <section id="rechtliche-hinweise">
-  <h1>Rechtliche Hinweise (Website)</h1>
-  <h2>Haftung für Inhalte</h2>
-  <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.</p>
-  <h2>Haftung für Links</h2>
-  <p>Unser Angebot enthält ggf. Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte keine Gewähr übernehmen. Für die Inhalte verlinkter Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich.</p>
-  <h2>Urheberrecht</h2>
-  <p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Vervielfältigung, Bearbeitung und Verbreitung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
-</section>
-
-<section id="support">
-  <h1>Support & FAQ</h1>
-  <p>Support per E‑Mail: <a href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a> (Antwort i. d. R. 24–48 h).</p>
-  <ul>
-    <li>Alle App‑Daten bleiben lokal; Exporte sicher verwahren.</li>
-    <li>Photo Picker (Android 13+) empfohlen für Medienauswahl.</li>
-    <li>Bei Berechtigungsablehnung in der App ist die Funktionalität eingeschränkt.</li>
-  </ul>
+  <h2>Rechtliche Hinweise zur Website</h2>
+  <h3>Haftung für Inhalte</h3>
+  <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte verantwortlich. Nach §§ 8–10 TMG keine Pflicht zur Überwachung übermittelter/gespeicherter fremder Informationen. Verpflichtungen zur Entfernung/Sperrung nach allgemeinen Gesetzen bleiben unberührt.</p>
+  <h3>Haftung für Links</h3>
+  <p>Für Inhalte verlinkter externer Seiten ist stets der jeweilige Anbieter/Betreiber verantwortlich.</p>
+  <h3>Urheberrecht</h3>
+  <p>Inhalte dieser Website unterliegen deutschem Urheberrecht; Nutzung außerhalb der Schranken erfordert eine vorherige Zustimmung.</p>
 </section>
 
 </main>
 
 <footer>
   <p>© Lärmprotokoll Professional • Daniel Ovadia • Karlsruhe, Deutschland</p>
-  <p class="host-note">Bereitgestellt über GitHub Pages.</p>
+  <p><a id="manage-consent" href="#" aria-haspopup="dialog">Datenschutz-Einstellungen</a></p>
 </footer>
+
+<!-- Consent Banner & Modal (EU-Style) -->
+<div id="consent-banner" role="region" aria-label="Datenschutz-Hinweis" style="display:none;">
+  <div class="wrap">
+    <p><strong>Datenschutzhinweis:</strong> Wir verwenden auf dieser Website nur <em>technisch notwendige</em> Dienste. 
+    Der Hoster <strong>GitHub Pages</strong> verarbeitet serverseitig Verbindungsdaten (z. B. IP‑Adresse, Zeitstempel, User‑Agent) zur sicheren Bereitstellung.
+    <br>Wir setzen <strong>keine</strong> eigenen Cookies, kein Tracking, keine Analyse. Details: <a href="#datenschutz" style="color:#93c5fd;">Datenschutz</a>.</p>
+    <div class="actions">
+      <button class="btn primary" id="consent-accept">Nur notwendige akzeptieren</button>
+      <button class="btn" id="consent-settings">Einstellungen</button>
+    </div>
+  </div>
+</div>
+
+<div id="consent-modal" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+  <div class="card">
+    <h3 id="consent-title">Datenschutz-Einstellungen</h3>
+    <div class="row">
+      <div>Notwendig (Hosting/Logs)</div>
+      <div class="badge">immer aktiv</div>
+    </div>
+    <div class="row">
+      <div>Komfort/Analyse</div>
+      <div class="badge">nicht verwendet</div>
+    </div>
+    <div style="display:flex; gap:.5rem; justify-content:flex-end; margin-top:1rem;">
+      <button class="btn" id="consent-cancel">Abbrechen</button>
+      <button class="btn primary" id="consent-save">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const KEY = "lp_consent_v1";
+  const banner = document.getElementById('consent-banner');
+  const modal = document.getElementById('consent-modal');
+  const openSettings = document.getElementById('manage-consent');
+  const btnAccept = document.getElementById('consent-accept');
+  const btnSettings = document.getElementById('consent-settings');
+  const btnSave = document.getElementById('consent-save');
+  const btnCancel = document.getElementById('consent-cancel');
+
+  function hasConsent() {
+    try { return localStorage.getItem(KEY) !== null; } catch(e){ return true; }
+  }
+  function saveConsent(data) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
+  }
+  function showBanner() { banner.style.display = 'block'; }
+  function hideBanner() { banner.style.display = 'none'; }
+  function openModal() { modal.style.display = 'flex'; }
+  function closeModal() { modal.style.display = 'none'; }
+
+  if (!hasConsent()) showBanner();
+
+  btnAccept.addEventListener('click', function(){
+    saveConsent({ necessary: true, analytics: false, ts: Date.now() });
+    hideBanner();
+  });
+  btnSettings.addEventListener('click', function(){
+    openModal();
+  });
+  btnSave.addEventListener('click', function(){
+    saveConsent({ necessary: true, analytics: false, ts: Date.now() });
+    closeModal(); hideBanner();
+  });
+  btnCancel.addEventListener('click', function(){ closeModal(); });
+
+  openSettings.addEventListener('click', function(e){
+    e.preventDefault(); openModal();
+  });
+})();
+</script>
 
 </body>
 </html>
