@@ -2,8 +2,11 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lärmprotokoll Professional – Rechtliches & Support</title>
+<link rel="icon" href="./assets/logo.png">
+<meta name="robots" content="index,follow">
+<meta name="description" content="Lärmprotokoll Professional – Rechtliche Informationen, Datenschutz, AGB und Support.">
 <style>
   :root { --maxw: 900px; }
   html { scroll-behavior: smooth; }
@@ -25,21 +28,16 @@
   .meta { color: #6b7280; font-size: .9rem; }
   .note { background: #fff7ed; border: 1px solid #fed7aa; padding: .75rem 1rem; border-radius: .5rem; }
   footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1rem; color: #6b7280; }
-  /* Popup */
-  #privacy-popup {
-    position: fixed; bottom: 10px; left: 10px; right: 10px; background: #fff;
-    border: 1px solid #ccc; padding: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    display: none; z-index: 1000;
-  }
-  #privacy-popup button {
-    background: #007bff; color: #fff; border: none; padding: .5rem 1rem; cursor: pointer;
-  }
+  /* Privacy Popup */
+  #privacy-popup { position: fixed; bottom: 10px; left: 10px; right: 10px; background: #fff; border: 1px solid #ccc;
+                   padding: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none; z-index: 1000; }
+  #privacy-popup button { background: #007bff; color: #fff; border: none; padding: .5rem 1rem; cursor: pointer; }
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
-    <img src="assets/logo.png" alt="Lärmprotokoll Professional – App-Logo" />
+    <img src="./assets/logo.png" alt="Lärmprotokoll Professional – Logo">
     <div class="brand-text">
       <span class="brand-title">LÄRMPROTOKOLL</span>
       <span class="brand-sub">PROFESSIONAL</span>
@@ -60,27 +58,55 @@
   <p>Daniel Ovadia<br>Eugen-Richter-Str. 159<br>76187 Karlsruhe<br>Deutschland</p>
   <p>E-Mail: <a href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a><br>
   <em>Support ausschließlich per E-Mail – keine Telefon-Hotline.</em></p>
+  <p class="meta">Stand: Februar 2025</p>
 </section>
 
 <section id="datenschutz">
   <h1>Datenschutzerklärung</h1>
   <p>Die App speichert Messdaten (Dezibelwerte), Fotos, Videos, Audioaufnahmen, GPS-Daten und Zeitstempel ausschließlich lokal. 
-  Diese Daten verlassen Ihr Gerät nur, wenn Sie selbst einen Export durchführen. 
-  Bitte beachten Sie, dass Audio-/Videoaufnahmen nur im Einklang mit den Persönlichkeitsrechten Dritter erfolgen dürfen.</p>
-  <p>Rechtsgrundlagen: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und lit. f DSGVO (berechtigtes Interesse an Beweissicherung).</p>
+  Diese Daten verlassen Ihr Gerät nur, wenn Sie selbst einen Export durchführen (PDF/JSON/ZIP). 
+  Audio-/Videoaufnahmen sind nur zulässig, wenn Rechte Dritter gewahrt bleiben.</p>
+  <h2>Rechtsgrundlagen</h2>
+  <ul>
+    <li>Art. 6 Abs. 1 lit. b DSGVO – Erfüllung des Vertrags (Dokumentation)</li>
+    <li>Art. 6 Abs. 1 lit. f DSGVO – Berechtigtes Interesse (strukturierte Beweissicherung)</li>
+  </ul>
+  <h2>Berechtigungen</h2>
+  <ul>
+    <li>Mikrofon & Kamera: für Audio/Fotos/Videos</li>
+    <li>Präziser Standort: GPS zur Zuordnung von Ort/Zeit (Kartenlinks im PDF)</li>
+    <li>Medienauswahl (ab Android 13 bevorzugt via Photo Picker, ohne Berechtigung)</li>
+  </ul>
+  <h2>Speicherung & Weitergabe</h2>
+  <p>Speicherung ausschließlich lokal bis zur Löschung durch den Nutzer. Keine Weitergabe an Dritte. In‑App‑Käufe laufen über Google/Apple.</p>
+  <h2>Betroffenenrechte</h2>
+  <p>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch (Art. 15–21 DSGVO).</p>
+  <p class="meta">Stand: Februar 2025</p>
 </section>
 
 <section id="agb">
   <h1>Allgemeine Geschäftsbedingungen</h1>
-  <p>Der Nutzer ist selbst verantwortlich für die Rechtmäßigkeit von Audio-/Videoaufnahmen und Exporten. 
-  Die App gibt keine Garantie, dass Aufnahmen vor Gericht anerkannt werden. 
-  Haftungsausschluss: Wir haften unbeschränkt bei Schäden an Leben/Körper/Gesundheit, im Übrigen nur bei grober Fahrlässigkeit oder Vorsatz.</p>
-  <p>Widerruf: Ihr Widerrufsrecht für In-App-Käufe erlischt, wenn Sie der sofortigen Vertragsausführung zustimmen (§356 Abs.5 BGB).</p>
+  <h2>Vertragsgegenstand</h2>
+  <p>Die App dient der professionellen Messung und Dokumentation von Lärm. Keine Rechtsberatung. Keine Zusicherung gerichtlicher Verwertbarkeit.</p>
+  <h2>Datenverarbeitung durch den Nutzer</h2>
+  <p>Der Nutzer entscheidet, welche Daten (Audio/Fotos/Videos/GPS/Notizen) erfasst. Speicherung ausschließlich lokal; der Anbieter hat keinen Zugriff. 
+     Der Nutzer ist für die Rechtmäßigkeit von Aufnahmen selbst verantwortlich (Persönlichkeitsrecht, §§ 22 ff. KUG).</p>
+  <h2>Widerrufsrecht</h2>
+  <p>Bei digitalen Inhalten erlischt das Widerrufsrecht, wenn der Nutzer der sofortigen Ausführung zustimmt (§ 356 Abs. 5 BGB). 
+     In‑App‑Käufe werden über den jeweiligen App‑Store abgewickelt; es gelten die Store‑Bedingungen.</p>
+  <h2>Haftung</h2>
+  <p>Unbeschränkte Haftung bei Verletzung von Leben, Körper, Gesundheit. Im Übrigen Haftung nur für Vorsatz und grobe Fahrlässigkeit.</p>
+  <p class="meta">Stand: Februar 2025</p>
 </section>
 
 <section id="support">
   <h1>Support & FAQ</h1>
-  <p>Alle Daten verbleiben lokal. Exporte enthalten sensible Daten und müssen vom Nutzer sicher verwahrt werden.</p>
+  <p>Support per E‑Mail: <a href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a> (Antwort i. d. R. 24–48 h).</p>
+  <ul>
+    <li>Alle Daten bleiben lokal; Exporte sicher verwahren.</li>
+    <li>Photo Picker (Android 13+) empfohlen für Medienauswahl.</li>
+    <li>Bei Berechtigungsablehnung Funktionalität eingeschränkt.</li>
+  </ul>
 </section>
 </main>
 
@@ -89,21 +115,23 @@
 </footer>
 
 <div id="privacy-popup">
-  <p>Diese App benötigt Mikrofon-, Kamera- und GPS-Berechtigungen, um Lärmprotokolle mit Audio, Video und Standortdaten zu erstellen. 
-  Sie dürfen Aufnahmen nur vornehmen, wenn Sie die Rechte Dritter wahren.</p>
+  <p>Diese App nutzt Mikrofon, Kamera und GPS, um Lärmprotokolle mit Audio/Video/Standort zu erstellen. 
+     Aufnahmen nur vornehmen, wenn Rechte Dritter gewahrt sind. Daten bleiben lokal.</p>
   <button id="accept-btn">OK</button>
 </div>
 
 <script>
-  const popup = document.getElementById('privacy-popup');
-  const btn = document.getElementById('accept-btn');
-  if (!localStorage.getItem('privacyAccepted')) {
-    popup.style.display = 'block';
-  }
-  btn.addEventListener('click', () => {
-    localStorage.setItem('privacyAccepted', 'true');
-    popup.style.display = 'none';
-  });
+  (function() {
+    const popup = document.getElementById('privacy-popup');
+    const btn = document.getElementById('accept-btn');
+    if (!localStorage.getItem('privacyAccepted')) {
+      popup.style.display = 'block';
+    }
+    btn.addEventListener('click', function() {
+      localStorage.setItem('privacyAccepted', 'true');
+      popup.style.display = 'none';
+    });
+  })();
 </script>
 </body>
 </html>
