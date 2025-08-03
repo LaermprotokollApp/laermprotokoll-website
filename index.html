@@ -592,9 +592,11 @@
         const newHref = lang === 'de' ? `#${section}` : `#${section}-${lang}`;
         link.href = newHref;
         
-        // Update text if translation exists
-        if (navTranslations[lang] && navTranslations[lang][section]) {
-          link.textContent = navTranslations[lang][section];
+        // Update text if translation exists - FORCE UPDATE
+        const translations = navTranslations[lang];
+        if (translations && translations[section]) {
+          link.textContent = translations[section];
+          console.log(`Updated ${section} to: ${translations[section]} for language: ${lang}`);
         }
       }
     });
@@ -624,13 +626,18 @@
     });
   });
 
-  // Load saved language preference
+  // Load saved language preference and initialize
   try {
     const savedLang = localStorage.getItem('lp_language');
     if (savedLang && ['de', 'en', 'fr', 'es', 'it'].includes(savedLang)) {
       switchLanguage(savedLang);
+    } else {
+      // Force initial navigation update for default German
+      switchLanguage('de');
     }
-  } catch(e) {}
+  } catch(e) {
+    switchLanguage('de');
+  }
 
   // Smooth scrolling for navigation
   document.addEventListener('click', function(e) {
