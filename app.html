@@ -644,6 +644,34 @@
             font-family: monospace;
         }
 
+        /* Back to Website Button */
+        .back-to-website {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 101;
+        }
+
+        .back-to-website:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
         @media (max-width: 640px) {
             .header-content {
                 flex-direction: column;
@@ -663,10 +691,16 @@
             .quick-entry-timer { font-size: 2rem; }
             .media-buttons { flex-direction: column; }
             .camera-controls { flex-direction: column; align-items: center; }
+            .back-to-website { position: static; margin: 1rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Back to Website Button -->
+    <a href="./index.html" class="back-to-website">
+        ← Zurück zur Website
+    </a>
+
     <div id="app-root">
         <header class="header">
             <div class="header-content">
@@ -3047,433 +3081,3 @@ RECHTLICHE HINWEISE:
 - Fotos und Uploads in Original-Qualitaet
 - Geeignet fuer Behoerden, Anwaelte, Gerichte und Versicherungen
 - Entspricht den Standards fuer rechtssichere Dokumentation
-- Vollstaendige Nachvollziehbarkeit aller erfassten Daten
-
-TECHNISCHE INFORMATIONEN:
-============================
-Erstellt mit: Laermprotokoll Professional v3.0
-Entwickelt von: Daniel Ovadia
-Datum: ${new Date().toLocaleString('de-DE')}
-Archiv-Format: ZIP mit PDF-Bericht und Originalbeweismitteln
-
-SUPPORT:
-========
-Weitere Informationen zur Anwendung finden Sie in der
-PDF-Dokumentation. Alle Funktionen sind selbsterklaerend
-und folgen rechtlichen Standards fuer Laermprotokolle.
-`;
-                
-                zip.file('ANLEITUNG.txt', overview);
-                
-                console.log('📦 Creating final ZIP...');
-                showToast('Packe Archiv zusammen...', 'info');
-                
-                const zipBlob = await zip.generateAsync({
-                    type: 'blob',
-                    compression: 'DEFLATE',
-                    compressionOptions: { level: 6 }
-                });
-                
-                const url = URL.createObjectURL(zipBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${caseName}_Laermprotokoll_VOLLSTAENDIG_${new Date().toISOString().split('T')[0]}.zip`;
-                
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                URL.revokeObjectURL(url);
-                
-                console.log('✅ ZIP export completed');
-                
-                const successMessage = `📦 Archiv erstellt! ${mediaCounter.photos} Fotos, ${mediaCounter.audio} Audio, ${gpsDataList.length} GPS-Punkte`;
-                showToast(successMessage, 'success', 8000);
-                
-            } catch (error) {
-                console.error('❌ Export error:', error);
-                showToast(`❌ Export-Fehler: ${error.message}`, 'error');
-            }
-        }
-
-        async function createEnhancedPDF(mediaCounter, gpsDataList = []) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFont("helvetica");
-            
-            // Title page
-            doc.setFontSize(20);
-            doc.setFont(undefined, 'bold');
-            doc.text('LAERMPROTOKOLL PROFESSIONAL', 20, 30);
-            
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'normal');
-            doc.text('Rechtssichere Dokumentation mit Beweismittel-Archiv', 20, 45);
-            
-            doc.setFontSize(12);
-            doc.text('Erstellt am: ' + new Date().toLocaleString('de-DE'), 20, 60);
-            
-            // Case information
-            let y = 80;
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('Fall: ' + sanitizeGermanText(appState.currentCase.name), 20, y);
-            y += 15;
-            
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.text('Startdatum: ' + new Date(appState.currentCase.startDate).toLocaleDateString('de-DE'), 20, y);
-            y += 8;
-            
-            if (appState.currentCase.address) {
-                const addressLines = doc.splitTextToSize('Adresse: ' + sanitizeGermanText(appState.currentCase.address), 170);
-                addressLines.forEach(line => {
-                    doc.text(line, 20, y);
-                    y += 6;
-                });
-                y += 3;
-            }
-            
-            if (appState.currentCase.description) {
-                y += 5;
-                doc.setFont(undefined, 'bold');
-                doc.text('Beschreibung:', 20, y);
-                y += 6;
-                doc.setFont(undefined, 'normal');
-                const descLines = doc.splitTextToSize(sanitizeGermanText(appState.currentCase.description), 170);
-                descLines.forEach(line => {
-                    doc.text(line, 20, y);
-                    y += 6;
-                });
-            }
-            
-            // Statistics
-            y += 10;
-            doc.setDrawColor(0, 0, 0);
-            doc.rect(20, y, 170, 35);
-            
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('BEWEISMITTEL-UEBERSICHT', 25, y + 10);
-            
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            doc.text('Anzahl Eintraege: ' + appState.entries.length, 25, y + 18);
-            doc.text('Foto-Beweise: ' + mediaCounter.photos, 25, y + 24);
-            doc.text('Audio-Beweise: ' + mediaCounter.audio, 25, y + 30);
-            
-            doc.text('GPS-Koordinaten: ' + gpsDataList.length + ' Datenpunkte', 100, y + 18);
-            doc.text('GESAMT: ' + (mediaCounter.total + gpsDataList.length), 100, y + 24);
-            doc.text('Ordnerstruktur: Fotos + Audio', 100, y + 30);
-            
-            y += 45;
-            
-            // GPS-Daten Übersicht (falls vorhanden)
-            if (gpsDataList.length > 0) {
-                if (y > 240) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('GPS-KOORDINATEN UEBERSICHT', 20, y);
-                y += 10;
-                
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'normal');
-                
-                gpsDataList.forEach((gps, index) => {
-                    if (y > 260) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    
-                    doc.setFont(undefined, 'bold');
-                    doc.text(`GPS ${index + 1} - Eintrag ${gps.entryIndex}: ${sanitizeGermanText(gps.entryTitle)}`, 25, y);
-                    y += 6;
-                    
-                    doc.setFont(undefined, 'normal');
-                    doc.text(`Datum: ${gps.entryDate}`, 25, y);
-                    y += 5;
-                    doc.text(`Koordinaten: ${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)}`, 25, y);
-                    y += 5;
-                    doc.text(`Genauigkeit: ±${gps.accuracy}m`, 25, y);
-                    y += 5;
-                    doc.text(`Erfasst: ${gps.timestamp}`, 25, y);
-                    y += 5;
-                    
-                    // Karten-Links
-                    doc.setTextColor(0, 0, 255);
-                    doc.text(`Google Maps: maps.google.com/?q=${gps.lat},${gps.lng}`, 25, y);
-                    y += 5;
-                    doc.text(`OpenStreetMap: openstreetmap.org/?mlat=${gps.lat}&mlon=${gps.lng}`, 25, y);
-                    doc.setTextColor(0, 0, 0);
-                    y += 8;
-                });
-                
-                y += 5;
-            }
-            
-            // Archive structure
-            if (y > 240) {
-                doc.addPage();
-                y = 20;
-            }
-            
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('ARCHIV-STRUKTUR', 20, y);
-            y += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            const structureText = [
-                'ZIP-Archiv Root/',
-                '|-- ANLEITUNG.txt (Vollstaendige Dokumentation)',
-                '|-- [Fallname]_Laermprotokoll_Bericht.pdf (diese Datei)',
-                '\\-- Beweismittel/',
-                '    |-- Fotos/ (' + mediaCounter.photos + ' Foto- und Upload-Dateien)',
-                '    \\-- Audio/ (' + mediaCounter.audio + ' Audio-Aufnahmen)',
-                '',
-                'GPS-Koordinaten (' + gpsDataList.length + ' Datenpunkte) sind in diesem PDF dokumentiert'
-            ];
-            
-            structureText.forEach(line => {
-                doc.text(line, 25, y);
-                y += 5;
-            });
-            
-            // Detailed entries
-            doc.addPage();
-            y = 20;
-            
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('DETAILLIERTE EINTRAEGE', 20, y);
-            y += 15;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            
-            appState.entries.forEach((entry, entryIndex) => {
-                if (y > 250) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                // Entry header
-                doc.setFillColor(240, 240, 240);
-                doc.rect(20, y - 3, 170, 12, 'F');
-                
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'bold');
-                doc.text((entryIndex + 1) + '. ' + sanitizeGermanText(entry.noiseType), 22, y + 5);
-                y += 15;
-                
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'normal');
-                
-                // Entry details
-                doc.text('Datum: ' + new Date(entry.date).toLocaleDateString('de-DE') + ' ' + entry.timeFrom + (entry.timeTo ? ' - ' + entry.timeTo : ''), 25, y);
-                y += 5;
-                
-                doc.text('Intensitaet: ' + getIntensityText(entry.intensity), 25, y);
-                y += 5;
-                
-                if (entry.dbValue) {
-                    doc.text('Lautstaerke: ' + entry.dbValue + ' dB', 25, y);
-                    y += 5;
-                }
-                
-                if (entry.duration) {
-                    doc.text('Dauer: ' + entry.duration + ' Minuten', 25, y);
-                    y += 5;
-                }
-                
-                if (entry.description) {
-                    doc.text('Beschreibung:', 25, y);
-                    y += 4;
-                    const descLines = doc.splitTextToSize('   ' + sanitizeGermanText(entry.description), 160);
-                    descLines.forEach(line => {
-                        doc.text(line, 25, y);
-                        y += 4;
-                    });
-                    y += 2;
-                }
-                
-                // Media references und GPS-Daten für diesen Eintrag
-                const entryGpsData = gpsDataList.filter(gps => gps.entryIndex === entryIndex + 1);
-                const entryMediaCount = (entry.mediaCount?.photos || 0) + (entry.mediaCount?.audio || 0);
-                
-                if (entryMediaCount > 0 || entryGpsData.length > 0) {
-                    y += 3;
-                    doc.setFont(undefined, 'bold');
-                    doc.text('BEWEISMITTEL (' + (entryMediaCount + entryGpsData.length) + ' Datenpunkte):', 25, y);
-                    y += 6;
-                    
-                    doc.setFont(undefined, 'normal');
-                    doc.setFontSize(8);
-                    
-                    if (entry.mediaCount?.photos > 0) {
-                        doc.setTextColor(0, 100, 200);
-                        doc.text('=> FOTOS: Beweismittel/Fotos/ (siehe Archiv)', 30, y);
-                        doc.setTextColor(0, 0, 0);
-                        y += 4;
-                    }
-                    
-                    if (entry.mediaCount?.audio > 0) {
-                        doc.setTextColor(200, 0, 0);
-                        doc.text('=> AUDIO: Beweismittel/Audio/ (siehe Archiv)', 30, y);
-                        doc.setTextColor(0, 0, 0);
-                        y += 4;
-                    }
-                    
-                    if (entryGpsData.length > 0) {
-                        entryGpsData.forEach(gps => {
-                            doc.setTextColor(0, 150, 0);
-                            doc.text(`=> GPS: ${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)} (±${gps.accuracy}m)`, 30, y);
-                            doc.setTextColor(0, 0, 0);
-                            y += 4;
-                        });
-                    }
-                    
-                    doc.setFontSize(9);
-                }
-                
-                y += 8;
-            });
-            
-            // Footer
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(100, 100, 100);
-                doc.text('Seite ' + i + ' von ' + pageCount + ' | Laermprotokoll Professional | ' + new Date().toLocaleDateString('de-DE'), 20, 290);
-                doc.setTextColor(0, 0, 0);
-            }
-            
-            return doc.output('blob');
-        }
-
-        // ===== EVENT LISTENERS & INITIALIZATION =====
-        let initializationComplete = false;
-        
-        document.addEventListener('DOMContentLoaded', async function() {
-            if (initializationComplete) return;
-            
-            console.log('=== LÄRMPROTOKOLL PROFESSIONAL STARTING ===');
-            
-            try {
-                // Load existing data first
-                await MemoryStorage.loadAppState();
-                
-                // Create demo case if empty
-                if (memoryDB.cases.length === 0) {
-                    console.log('Creating demo case...');
-                    const demoCase = {
-                        name: 'Demo Fall - Nachbar Lärmbelästigung',
-                        startDate: new Date().toISOString().split('T')[0],
-                        description: 'Beispielfall für Lärmprotokoll Professional',
-                        address: 'Musterstraße 10, 12345 Musterstadt',
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    const id = memoryDB.add('cases', demoCase);
-                    demoCase.id = id;
-                    memoryDB.settings.currentCaseId = id;
-                    memoryDB.saveToMemory();
-                    
-                    appState.cases.push(demoCase);
-                    appState.currentCase = demoCase;
-                    console.log('✅ Demo case created');
-                }
-                
-                // Setup event listeners
-                setupEventListeners();
-                
-                // Update UI
-                updateUI();
-                
-                showToast('🛡️ Lärmprotokoll Professional bereit!', 'success', 4000);
-                
-                // Storage-Status informieren
-                setTimeout(() => {
-                    const storageType = MemoryStorage.storageType;
-                    if (storageType === 'localStorage') {
-                        showToast('✅ Persistente Speicherung aktiv - Daten bleiben erhalten!', 'success', 6000);
-                    } else {
-                        showToast('💡 Session-Modus: Nutzen Sie Export für dauerhafte Datensicherung.', 'info', 8000);
-                    }
-                }, 2000);
-                
-                initializationComplete = true;
-                console.log('=== INITIALIZATION COMPLETED ===');
-                
-            } catch (error) {
-                console.error('=== INITIALIZATION ERROR ===', error);
-                showToast('❌ Fehler beim Laden: ' + error.message, 'error');
-            }
-        });
-
-        function setupEventListeners() {
-            // Case selection
-            const caseSelect = document.getElementById('caseSelect');
-            if (caseSelect) {
-                caseSelect.addEventListener('change', (e) => switchCase(e.target.value));
-            }
-
-            // Main buttons
-            const buttons = [
-                { id: 'newCaseBtn', handler: showNewCaseModal },
-                { id: 'settingsBtn', handler: showSettingsModal },
-                { id: 'quickStartBtn', handler: startQuickEntry },
-                { id: 'newEntryBtn', handler: () => showEntryModal() },
-                { id: 'createFirstCaseBtn', handler: showNewCaseModal },
-                { id: 'exportBtn', handler: exportCompleteArchive }
-            ];
-
-            buttons.forEach(({ id, handler }) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('click', handler);
-                }
-            });
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey || e.metaKey) {
-                    switch (e.key) {
-                        case 'n':
-                            e.preventDefault();
-                            showNewCaseModal();
-                            break;
-                        case 'e':
-                            e.preventDefault();
-                            if (appState.currentCase) showEntryModal();
-                            break;
-                        case 's':
-                            e.preventDefault();
-                            MemoryStorage.saveAppState();
-                            break;
-                    }
-                }
-                if (e.key === 'Escape') {
-                    const modals = document.querySelectorAll('.modal[style*="flex"]');
-                    if (modals.length > 0) {
-                        const topModal = modals[modals.length - 1];
-                        closeModal(topModal.id);
-                    }
-                }
-            });
-        }
-
-        console.log('✅ Lärmprotokoll Professional loaded successfully!');
-        console.log('💾 localStorage Integration: Daten bleiben nach Browser-Neustart erhalten!');
-        console.log('💡 Debug help: debugLaermprotokoll.help()');
-        console.log('🔄 Persistente Speicherung + Export/Import verfügbar');
-    </script>
-</body>
-</html>
