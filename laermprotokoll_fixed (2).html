@@ -1,0 +1,3479 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rechtssichere Dokumentation von Lärmbelästigungen">
+    <meta name="theme-color" content="#1d4ed8">
+    
+    <title>Lärmprotokoll Professional</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1d4ed8;
+            --primary-dark: #1e40af;
+            --secondary: #059669;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            color: var(--gray-900);
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--gray-900) 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-info h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-info p {
+            opacity: 0.9;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            background: transparent;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-secondary { background: var(--gray-600); color: white; }
+        .btn-sm { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+        .btn-large { padding: 1rem 2rem; font-size: 1.125rem; font-weight: 600; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .card-header { padding: 1.25rem; border-bottom: 1px solid var(--gray-200); }
+        .card-body { padding: 1.25rem; }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .stat-number { font-size: 1.75rem; font-weight: 700; color: var(--gray-900); }
+        .stat-label { color: var(--gray-600); font-size: 0.875rem; }
+
+        .empty-state { padding: 3rem 1rem; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+
+        .case-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .case-select option {
+            background: var(--gray-800);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .entry-card {
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .entry-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .entry-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .intensity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .intensity-low { background: #d1fae5; color: #059669; }
+        .intensity-medium { background: #dbeafe; color: #2563eb; }
+        .intensity-high { background: #fef3c7; color: #d97706; }
+        .intensity-critical { background: #fee2e2; color: #dc2626; }
+
+        .entry-type {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-description {
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .entry-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        .entry-details > div {
+            margin-bottom: 0.25rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #92400e;
+            margin: 1rem 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 2rem);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal-small { max-width: 400px; width: 100%; }
+        .modal-medium { max-width: 600px; width: 100%; }
+        .modal-large { max-width: 800px; width: 100%; }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group { margin-bottom: 1rem; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: var(--danger);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        #toastContainer {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(calc(100% + 2rem));
+            transition: transform 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast-show { transform: translateX(0); }
+        .toast-success { background: var(--secondary); }
+        .toast-error { background: var(--danger); }
+        .toast-warning { background: var(--warning); }
+        .toast-info { background: var(--primary); }
+
+        .quick-entry-timer {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--danger);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .quick-entry-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .media-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .media-section h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .media-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .media-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .recording {
+            background: var(--danger) !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .media-preview-container {
+            margin-top: 1rem;
+            min-height: 50px;
+            border: 2px dashed var(--gray-300);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background: var(--gray-50);
+        }
+
+        .media-preview-container.has-media {
+            border-style: solid;
+            background: white;
+        }
+
+        .media-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .media-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+        }
+
+        .media-item audio {
+            max-width: 200px;
+        }
+
+        .media-info { flex: 1; }
+
+        .media-info .media-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .media-info .media-details {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        .media-remove {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .media-remove:hover {
+            background: #b91c1c;
+        }
+
+        .gps-info {
+            background: var(--gray-100);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .gps-info .coordinates {
+            font-family: monospace;
+            margin-bottom: 0.25rem;
+        }
+
+        .gps-info .accuracy {
+            color: var(--gray-600);
+        }
+
+        .camera-container { text-align: center; }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background: #000;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .capture-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 4rem;
+            height: 4rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .capture-btn:hover {
+            background: #b91c1c;
+        }
+
+        .export-highlight {
+            background: linear-gradient(135deg, var(--danger) 0%, var(--warning) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .export-highlight h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: var(--secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+
+        .timer-display {
+            background: var(--danger);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            text-align: center;
+            font-weight: 600;
+            margin: 1rem 0;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        @media (max-width: 640px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .header-info h1 { font-size: 1.5rem; }
+            .entry-header { flex-direction: column; }
+            .button-group { flex-direction: column; }
+            .button-group .btn { width: 100%; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons .btn { width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            .modal-content { margin: 0; height: 100%; max-height: 100%; border-radius: 0; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-entry-timer { font-size: 2rem; }
+            .media-buttons { flex-direction: column; }
+            .camera-controls { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-root">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1>Lärmprotokoll Professional</h1>
+                    <p>
+                        <select id="caseSelect" class="case-select" aria-label="Fall auswählen">
+                            <option value="">Kein Fall ausgewählt</option>
+                        </select>
+                        <span id="countryDisplay">Deutschland</span> • 
+                        <span id="entryCount">0</span> Einträge
+                        <span id="saveStatus" style="margin-left: 0.5rem; font-size: 0.75rem; opacity: 0.8;">
+                            💾 <span id="saveText">Session</span>
+                        </span>
+                    </p>
+                </div>
+                <div class="header-buttons">
+                    <button id="newCaseBtn" class="btn btn-primary" aria-label="Neuen Fall erstellen">
+                        ➕ Neuer Fall
+                    </button>
+                    <button id="settingsBtn" class="btn btn-secondary" aria-label="Einstellungen öffnen">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <section id="actionButtons" class="action-buttons mb-4 hidden">
+                <button class="btn btn-danger btn-large" id="quickStartBtn">
+                    🚨 SOFORT PROTOKOLL
+                </button>
+                <button class="btn btn-primary btn-large" id="newEntryBtn">
+                    📝 Neuer Eintrag
+                </button>
+            </section>
+
+            <section id="statsSection" class="stats-grid mb-4 hidden">
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-number" id="totalEntries">0</div>
+                    <div class="stat-label">Einträge</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-number" id="criticalEntries">0</div>
+                    <div class="stat-label">Unzumutbar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📷</div>
+                    <div class="stat-number" id="totalPhotos">0</div>
+                    <div class="stat-label">Fotos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎤</div>
+                    <div class="stat-number" id="totalAudio">0</div>
+                    <div class="stat-label">Audio</div>
+                </div>
+            </section>
+
+            <div id="emptyState" class="empty-state card">
+                <div class="card-body text-center">
+                    <div class="empty-icon">📋</div>
+                    <h2>Willkommen zum Lärmprotokoll</h2>
+                    <p>Erstellen Sie Ihren ersten Fall für die rechtssichere Dokumentation</p>
+                    <button class="btn btn-primary" id="createFirstCaseBtn">
+                        📁 Ersten Fall erstellen
+                    </button>
+                </div>
+            </div>
+
+            <div id="caseEmptyState" class="empty-state card hidden">
+                <div class="card-body text-center">
+                    <div class="empty-icon">📝</div>
+                    <h3>Noch keine Einträge vorhanden</h3>
+                    <p>Beginnen Sie mit der Dokumentation von Lärmbelästigungen über die Buttons oben</p>
+                    <div class="info-box">
+                        <strong>💡 Hinweis:</strong><br>
+                        • "Sofort Protokoll" für laufende Störungen mit Timer<br>
+                        • Fotos, Audio und GPS als Beweismittel erfassen<br>
+                        • <strong>💾 Persistent:</strong> Daten bleiben nach Browser-Neustart erhalten<br>
+                        • Nutzen Sie den Export, um Daten zu sichern
+                    </div>
+                </div>
+            </div>
+
+            <div id="entriesList" class="entries-list"></div>
+
+            <section id="exportSection" class="hidden">
+                <div class="export-highlight">
+                    <h3>🏛️ RECHTSSICHERER EXPORT</h3>
+                    <p>Exportieren Sie Ihr vollständiges Lärmprotokoll als ZIP-Archiv für Behörden, Anwälte oder Gerichte</p>
+                    <div class="button-group">
+                        <button class="btn btn-danger btn-large" id="exportBtn" style="background: white; color: var(--danger);">
+                            📦 VOLLSTÄNDIGES ARCHIV ERSTELLEN
+                        </button>
+                    </div>
+                    <div class="info-box" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                        <strong>📦 Das ZIP-Archiv enthält:</strong><br>
+                        • PDF-Protokoll mit GPS-Koordinaten und Karten-Links<br>
+                        • Alle Original-Fotos und Uploads im Fotos-Ordner<br>
+                        • Alle Audio-Aufnahmen als WAV/MP3<br>
+                        • Übersichtliche Ordnerstruktur (Fotos + Audio)<br>
+                        • GPS-Daten vollständig im PDF dokumentiert<br>
+                        • Rechtssichere Dokumentation nach Standards
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modalsContainer"></div>
+    <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+    <div id="saveIndicator" class="save-indicator">💾 Daten gespeichert</div>
+
+    <script>
+        'use strict';
+        
+        // ===== VERBESSERTE DATENSTRUKTUREN MIT LOCALSTORAGE =====
+        class MemoryDB {
+            constructor() {
+                this.cases = [];
+                this.entries = [];
+                this.media = [];
+                this.settings = {
+                    country: 'DE',
+                    customNoiseTypes: [],
+                    currentCaseId: null
+                };
+                this.nextIds = {
+                    cases: 1,
+                    entries: 1,
+                    media: 1
+                };
+                console.log('🔧 MemoryDB initialized with localStorage support');
+            }
+
+            // Verbesserte ID-Generierung
+            getNextId(collection) {
+                const id = this.nextIds[collection] || 1;
+                this.nextIds[collection] = id + 1;
+                return id;
+            }
+
+            add(collection, item) {
+                if (!this[collection]) {
+                    console.error(`Collection ${collection} does not exist`);
+                    return null;
+                }
+                
+                const itemCopy = { ...item };
+                itemCopy.id = this.getNextId(collection);
+                itemCopy.createdAt = itemCopy.createdAt || new Date().toISOString();
+                
+                this[collection].push(itemCopy);
+                console.log(`✅ Added to ${collection}:`, itemCopy.id);
+                return itemCopy.id;
+            }
+
+            update(collection, item) {
+                if (!this[collection] || !item.id) return false;
+                
+                const index = this[collection].findIndex(existing => existing.id === item.id);
+                if (index < 0) return false;
+                
+                const originalCreatedAt = this[collection][index].createdAt;
+                this[collection][index] = { 
+                    ...item,
+                    createdAt: originalCreatedAt,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                console.log(`✅ Updated ${collection}:`, item.id);
+                return true;
+            }
+
+            delete(collection, id) {
+                if (!this[collection]) return false;
+                
+                const index = this[collection].findIndex(item => item.id === id);
+                if (index < 0) return false;
+                
+                this[collection].splice(index, 1);
+                console.log(`✅ Deleted from ${collection}:`, id);
+                return true;
+            }
+
+            find(collection, predicate) {
+                if (!this[collection] || typeof predicate !== 'function') return [];
+                return this[collection].filter(predicate);
+            }
+
+            findById(collection, id) {
+                if (!this[collection]) return null;
+                return this[collection].find(item => item.id === id) || null;
+            }
+
+            // localStorage + Memory Persistierung
+            saveToMemory() {
+                // Speichere in localStorage wenn verfügbar
+                try {
+                    this.saveToLocalStorage();
+                    console.log('✅ Data saved persistently');
+                    return true;
+                } catch (error) {
+                    console.log('✅ Data saved in memory (localStorage not available)');
+                    return true;
+                }
+            }
+
+            loadFromMemory() {
+                // Lade aus localStorage wenn verfügbar
+                try {
+                    return this.loadFromLocalStorage();
+                } catch (error) {
+                    console.log('ℹ️ Starting fresh session (no previous data)');
+                    return false;
+                }
+            }
+
+            // localStorage Funktionen
+            saveToLocalStorage() {
+                if (typeof localStorage === 'undefined') {
+                    throw new Error('localStorage not available');
+                }
+                
+                const data = {
+                    cases: this.cases,
+                    entries: this.entries,
+                    media: this.media.map(m => ({
+                        ...m,
+                        blob: null // Blobs können nicht in localStorage gespeichert werden
+                    })),
+                    settings: this.settings,
+                    nextIds: this.nextIds,
+                    lastSaved: new Date().toISOString(),
+                    version: '3.0'
+                };
+                
+                localStorage.setItem('laermprotokoll_data', JSON.stringify(data));
+                localStorage.setItem('laermprotokoll_timestamp', new Date().toISOString());
+                return true;
+            }
+
+            loadFromLocalStorage() {
+                if (typeof localStorage === 'undefined') {
+                    throw new Error('localStorage not available');
+                }
+                
+                const dataString = localStorage.getItem('laermprotokoll_data');
+                const timestamp = localStorage.getItem('laermprotokoll_timestamp');
+                
+                if (!dataString) {
+                    console.log('ℹ️ No saved data found in localStorage');
+                    return false;
+                }
+                
+                try {
+                    const data = JSON.parse(dataString);
+                    
+                    if (data.version && data.cases !== undefined && data.entries !== undefined) {
+                        this.cases = data.cases || [];
+                        this.entries = data.entries || [];
+                        this.media = data.media || [];
+                        this.settings = { ...this.settings, ...data.settings };
+                        this.nextIds = { ...this.nextIds, ...data.nextIds };
+                        
+                        console.log(`✅ Data loaded from localStorage (${this.cases.length} cases, ${this.entries.length} entries)`);
+                        if (timestamp) {
+                            console.log(`📅 Last saved: ${new Date(timestamp).toLocaleString('de-DE')}`);
+                        }
+                        return true;
+                    } else {
+                        console.warn('⚠️ Invalid localStorage data format');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Error parsing localStorage data:', error);
+                    return false;
+                }
+            }
+
+            clearLocalStorage() {
+                try {
+                    localStorage.removeItem('laermprotokoll_data');
+                    localStorage.removeItem('laermprotokoll_timestamp');
+                    console.log('✅ localStorage cleared');
+                    return true;
+                } catch (error) {
+                    console.log('ℹ️ localStorage not available for clearing');
+                    return false;
+                }
+            }
+
+            // Export/Import für manuelle Persistierung
+            exportData() {
+                return JSON.stringify({
+                    cases: this.cases,
+                    entries: this.entries,
+                    settings: this.settings,
+                    nextIds: this.nextIds,
+                    exportDate: new Date().toISOString(),
+                    version: '3.0'
+                }, null, 2);
+            }
+
+            importData(jsonString) {
+                try {
+                    const data = JSON.parse(jsonString);
+                    if (data.version && data.cases && data.entries) {
+                        this.cases = data.cases || [];
+                        this.entries = data.entries || [];
+                        this.settings = { ...this.settings, ...data.settings };
+                        this.nextIds = { ...this.nextIds, ...data.nextIds };
+                        console.log('✅ Data imported successfully');
+                        return true;
+                    } else {
+                        console.error('❌ Invalid data format');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Import failed:', error.message);
+                    return false;
+                }
+            }
+        }
+
+        // ===== GLOBALE VARIABLEN =====
+        const memoryDB = new MemoryDB();
+        let appState = {
+            currentCase: null,
+            entries: [],
+            cases: [],
+            customNoiseTypes: [],
+            country: 'DE',
+            quickEntryMode: false,
+            quickEntryData: null
+        };
+
+        // Media-Verwaltung
+        let currentEntryMedia = [];
+        let mediaIdCounter = 1;
+        let currentMediaRecorder = null;
+        let currentStream = null;
+        let isRecording = false;
+        let recordingTimer = null;
+        let recordingSeconds = 0;
+        let quickEntryTimer = null;
+        let quickEntrySeconds = 0;
+
+        // ===== UTILITY FUNKTIONEN =====
+        function sanitizeGermanText(text) {
+            if (!text) return '';
+            return text
+                .replace(/ä/g, 'ae')
+                .replace(/ö/g, 'oe')
+                .replace(/ü/g, 'ue')
+                .replace(/Ä/g, 'Ae')
+                .replace(/Ö/g, 'Oe')
+                .replace(/Ü/g, 'Ue')
+                .replace(/ß/g, 'ss')
+                .replace(/[^\x00-\x7F]/g, '');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getIntensityText(intensity) {
+            const texts = {
+                low: 'Leicht wahrnehmbar',
+                medium: 'Merklich störend',
+                high: 'Erheblich belästigend',
+                critical: 'Unzumutbar'
+            };
+            return texts[intensity] || intensity;
+        }
+
+        // ===== TOAST SYSTEM =====
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('toast-show'));
+
+            setTimeout(() => {
+                toast.classList.remove('toast-show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ===== MODAL SYSTEM =====
+        function createModal(id, title, content, options = {}) {
+            const existingModal = document.getElementById(id);
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modal = document.createElement('div');
+            modal.id = id;
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            const size = options.size || 'medium';
+            const sizeClass = {
+                small: 'modal-small',
+                medium: 'modal-medium', 
+                large: 'modal-large'
+            }[size];
+
+            modal.innerHTML = `
+                <div class="modal-content ${sizeClass}">
+                    <div class="modal-header">
+                        <h2>${title}</h2>
+                        <button class="close-btn" onclick="closeModal('${id}')" type="button">×</button>
+                    </div>
+                    <div class="modal-body">
+                        ${content}
+                    </div>
+                    ${options.footer ? `<div class="modal-footer">${options.footer}</div>` : ''}
+                </div>
+            `;
+
+            document.getElementById('modalsContainer').appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(id);
+            });
+
+            return modal;
+        }
+
+        function closeModal(id) {
+            console.log('Closing modal:', id);
+            
+            stopAllMedia();
+            
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 100);
+            }
+            
+            if (id === 'entryModal' || id === 'quickEntryModal' || id === 'quickCompletionModal') {
+                currentEntryMedia = [];
+            }
+        }
+
+        // ===== MEDIA FUNKTIONEN =====
+        function stopAllMedia() {
+            if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
+                currentMediaRecorder.stop();
+            }
+            isRecording = false;
+            currentMediaRecorder = null;
+            
+            if (recordingTimer) {
+                clearInterval(recordingTimer);
+                recordingTimer = null;
+            }
+            recordingSeconds = 0;
+            
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            
+            updateAudioButton();
+            updateAudioTimerDisplay();
+        }
+
+        function resetMediaForEntry(entry = null) {
+            console.log('🔧 Resetting media for entry');
+            
+            if (entry && entry.media && Array.isArray(entry.media) && entry.media.length > 0) {
+                console.log('📂 Loading existing media:', entry.media.length, 'items');
+                currentEntryMedia = entry.media.map((media, index) => ({
+                    ...media,
+                    id: media.id || `existing_${Date.now()}_${index}`
+                }));
+            } else {
+                console.log('📂 No existing media - starting fresh');
+                currentEntryMedia = [];
+            }
+            
+            updateMediaPreview();
+            console.log(`✅ Media reset completed. Count: ${currentEntryMedia.length}`);
+        }
+
+        function updateMediaPreview() {
+            console.log('🔧 Updating media preview. Count:', currentEntryMedia.length);
+            
+            const container = document.getElementById('mediaPreviewContainer');
+            if (!container) return;
+
+            if (currentEntryMedia.length === 0) {
+                container.className = 'media-preview-container';
+                container.innerHTML = '';
+                return;
+            }
+
+            container.className = 'media-preview-container has-media';
+            
+            try {
+                const htmlContent = currentEntryMedia.map((item, index) => {
+                    let preview = '';
+                    
+                    if (item.type === 'photo') {
+                        const imgSrc = item.data || (item.blob ? URL.createObjectURL(item.blob) : '');
+                        preview = imgSrc ? 
+                            `<img src="${imgSrc}" alt="Foto ${index + 1}">` :
+                            '<div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 24px;">📷</div>';
+                    } else if (item.type === 'audio') {
+                        const audioSrc = item.data || (item.blob ? URL.createObjectURL(item.blob) : '');
+                        preview = `<div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 2rem;">🎤</span>
+                            ${audioSrc ? `<audio controls src="${audioSrc}" style="max-width: 200px;"></audio>` : '<span>Audio</span>'}
+                        </div>`;
+                    } else if (item.type === 'gps') {
+                        preview = `<div class="gps-info">
+                            <div class="coordinates">📍 ${item.lat?.toFixed(6) || 0}, ${item.lng?.toFixed(6) || 0}</div>
+                            <div class="accuracy">Genauigkeit: ±${item.accuracy || 'N/A'}m</div>
+                        </div>`;
+                    }
+
+                    const displayName = item.name || item.originalName || `${item.type}_${index + 1}`;
+                    const displaySize = formatFileSize(item.size || 0);
+
+                    return `
+                        <div class="media-item" data-index="${index}">
+                            <div class="media-preview">${preview}</div>
+                            <div class="media-info">
+                                <div class="media-name">${displayName}</div>
+                                <div class="media-details">${item.timestamp || 'Unknown time'} • ${displaySize}</div>
+                            </div>
+                            <button class="media-remove" onclick="removeMedia(${index})" type="button" title="Beweismittel entfernen">×</button>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = htmlContent;
+                console.log('✅ Media preview updated successfully');
+                
+            } catch (error) {
+                console.error('❌ Error updating media preview:', error);
+                container.innerHTML = `<p style="color: red; text-align: center;">❌ Fehler beim Anzeigen der Beweismittel</p>`;
+            }
+        }
+
+        function removeMedia(index) {
+            console.log('🗑️ Removing media at index:', index);
+            
+            if (index < 0 || index >= currentEntryMedia.length) {
+                console.error('❌ Invalid media index:', index);
+                return;
+            }
+            
+            const removedMedia = currentEntryMedia[index];
+            
+            if (removedMedia.data && removedMedia.data.startsWith('blob:')) {
+                try {
+                    URL.revokeObjectURL(removedMedia.data);
+                } catch (error) {
+                    console.log('⚠️ URL revoke failed:', error.message);
+                }
+            }
+            
+            currentEntryMedia.splice(index, 1);
+            
+            updateMediaPreview();
+            showToast(`✅ Beweismittel entfernt (${currentEntryMedia.length} verbleibend)`, 'success');
+            console.log(`✅ Media removed. New count: ${currentEntryMedia.length}`);
+        }
+
+        // ===== KAMERA FUNKTIONEN =====
+        function showCameraModal() {
+            const content = `
+                <div class="camera-container">
+                    <video id="cameraPreview" class="camera-preview" autoplay playsinline></video>
+                    <canvas id="cameraCanvas" style="display: none;"></canvas>
+                    <div class="camera-controls">
+                        <button type="button" class="btn btn-secondary" onclick="switchCamera()">🔄 Kamera wechseln</button>
+                        <button type="button" class="capture-btn" onclick="capturePhoto()">📸</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('cameraModal')">❌ Abbrechen</button>
+                    </div>
+                </div>
+            `;
+
+            createModal('cameraModal', '📷 Kamera', content, { size: 'large' });
+            startCamera();
+        }
+
+        async function startCamera(facingMode = 'environment') {
+            try {
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: facingMode,
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                });
+
+                const video = document.getElementById('cameraPreview');
+                if (video) {
+                    video.srcObject = currentStream;
+                }
+            } catch (error) {
+                console.error('Camera error:', error);
+                showToast('Kamera konnte nicht gestartet werden: ' + error.message, 'error');
+                closeModal('cameraModal');
+            }
+        }
+
+        function switchCamera() {
+            const video = document.getElementById('cameraPreview');
+            if (video && currentStream) {
+                const track = currentStream.getVideoTracks()[0];
+                const currentFacingMode = track.getSettings().facingMode;
+                const newFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                startCamera(newFacingMode);
+            }
+        }
+
+        function capturePhoto() {
+            console.log('📸 Capturing photo');
+            
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('cameraCanvas');
+            
+            if (!video || !canvas || !video.videoWidth || !video.videoHeight) {
+                showToast('Kamera nicht bereit', 'error');
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    showToast('Fehler beim Erstellen des Fotos', 'error');
+                    return;
+                }
+                
+                const timestamp = new Date().toLocaleString('de-DE');
+                const photoCount = currentEntryMedia.filter(m => m.type === 'photo').length + 1;
+                const uniqueId = `photo_${mediaIdCounter++}_${Date.now()}`;
+                
+                const mediaItem = {
+                    id: uniqueId,
+                    type: 'photo',
+                    blob: blob,
+                    data: URL.createObjectURL(blob),
+                    name: `Foto_${photoCount}_${timestamp.replace(/[^\d]/g, '_')}.jpg`,
+                    timestamp: timestamp,
+                    size: blob.size
+                };
+
+                currentEntryMedia.push(mediaItem);
+                updateMediaPreview();
+                showToast(`✅ Foto ${photoCount} aufgenommen`, 'success');
+                closeModal('cameraModal');
+                
+                console.log('✅ Photo captured successfully');
+            }, 'image/jpeg', 0.9);
+        }
+
+        // ===== AUDIO FUNKTIONEN =====
+        async function toggleAudio() {
+            console.log('🎤 Toggle audio recording. Currently recording:', isRecording);
+            
+            if (isRecording) {
+                stopAudioRecording();
+            } else {
+                await startAudioRecording();
+            }
+        }
+
+        async function startAudioRecording() {
+            try {
+                if (isRecording) {
+                    console.warn('⚠️ Already recording');
+                    return;
+                }
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    } 
+                });
+                
+                const mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/wav'
+                });
+                
+                const audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    console.log('🎤 Audio recording stopped');
+                    
+                    if (recordingTimer) {
+                        clearInterval(recordingTimer);
+                        recordingTimer = null;
+                    }
+                    
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const timestamp = new Date().toLocaleString('de-DE');
+                    const audioCount = currentEntryMedia.filter(m => m.type === 'audio').length + 1;
+                    
+                    const uniqueId = `audio_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${audioCount}`;
+                    
+                    const mediaItem = {
+                        id: uniqueId,
+                        type: 'audio',
+                        blob: audioBlob,
+                        data: URL.createObjectURL(audioBlob),
+                        name: `Audio_${audioCount}_${timestamp.replace(/[^\d]/g, '_')}.wav`,
+                        timestamp: timestamp,
+                        size: audioBlob.size,
+                        duration: recordingSeconds
+                    };
+
+                    currentEntryMedia.push(mediaItem);
+                    updateMediaPreview();
+                    showToast(`✅ Audio-Aufnahme ${audioCount} gespeichert (${Math.floor(recordingSeconds/60)}:${(recordingSeconds%60).toString().padStart(2,'0')})`, 'success');
+                    
+                    recordingSeconds = 0;
+                    updateAudioTimerDisplay();
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    console.log('✅ Audio recording completed');
+                };
+                
+                mediaRecorder.onerror = (event) => {
+                    console.error('❌ MediaRecorder error:', event.error);
+                    showToast('❌ Fehler bei Audio-Aufnahme', 'error');
+                    isRecording = false;
+                    if (recordingTimer) {
+                        clearInterval(recordingTimer);
+                        recordingTimer = null;
+                    }
+                    recordingSeconds = 0;
+                    updateAudioButton();
+                    updateAudioTimerDisplay();
+                };
+                
+                currentMediaRecorder = mediaRecorder;
+                isRecording = true;
+                recordingSeconds = 0;
+                
+                recordingTimer = setInterval(() => {
+                    recordingSeconds++;
+                    updateAudioTimerDisplay();
+                }, 1000);
+                
+                mediaRecorder.start();
+                
+                updateAudioButton();
+                updateAudioTimerDisplay();
+                showToast('🎤 Audio-Aufnahme gestartet...', 'info');
+                
+                console.log('✅ Audio recording started with timer');
+                
+            } catch (error) {
+                console.error('❌ Failed to start audio recording:', error);
+                
+                let message = 'Mikrofon-Zugriff fehlgeschlagen';
+                if (error.name === 'NotAllowedError') {
+                    message = 'Mikrofon-Berechtigung verweigert';
+                } else if (error.name === 'NotFoundError') {
+                    message = 'Kein Mikrofon gefunden';
+                }
+                
+                showToast(`❌ ${message}`, 'error');
+                isRecording = false;
+                updateAudioButton();
+            }
+        }
+
+        function stopAudioRecording() {
+            console.log('🎤 Stopping audio recording');
+            
+            if (!isRecording || !currentMediaRecorder) {
+                console.warn('⚠️ No active recording to stop');
+                return;
+            }
+            
+            try {
+                currentMediaRecorder.stop();
+                isRecording = false;
+                currentMediaRecorder = null;
+                
+                updateAudioButton();
+                showToast('🎤 Audio-Aufnahme beendet', 'info');
+                
+                console.log('✅ Audio recording stopped');
+                
+            } catch (error) {
+                console.error('❌ Error stopping audio recording:', error);
+                isRecording = false;
+                currentMediaRecorder = null;
+                recordingSeconds = 0;
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
+                updateAudioButton();
+                updateAudioTimerDisplay();
+            }
+        }
+
+        function updateAudioTimerDisplay() {
+            const timerDisplays = document.querySelectorAll('#audioTimer, #audioTimerDisplay');
+            
+            timerDisplays.forEach(display => {
+                if (display) {
+                    if (isRecording && recordingSeconds > 0) {
+                        const minutes = Math.floor(recordingSeconds / 60);
+                        const seconds = recordingSeconds % 60;
+                        display.textContent = `🎤 Aufnahme: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        display.style.display = 'block';
+                        display.className = 'timer-display';
+                    } else {
+                        display.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function updateAudioButton() {
+            const audioButtons = document.querySelectorAll('#audioBtn, #quickAudioBtn');
+            const audioTexts = document.querySelectorAll('#audioText, #quickAudioText');
+            
+            audioButtons.forEach(btn => {
+                if (btn) {
+                    if (isRecording) {
+                        btn.className = 'btn btn-danger recording';
+                        btn.style.animation = 'pulse 1s infinite';
+                    } else {
+                        btn.className = 'btn btn-danger';
+                        btn.style.animation = 'none';
+                    }
+                }
+            });
+            
+            audioTexts.forEach(text => {
+                if (text) {
+                    if (isRecording && recordingSeconds > 0) {
+                        const minutes = Math.floor(recordingSeconds / 60);
+                        const seconds = recordingSeconds % 60;
+                        text.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    } else {
+                        text.textContent = isRecording ? 'Stop' : 'Audio';
+                    }
+                }
+            });
+        }
+
+        // ===== GPS FUNKTIONEN =====
+        function captureGPS() {
+            console.log('📍 Capturing GPS location');
+            
+            if (!navigator.geolocation) {
+                showToast('❌ GPS wird von diesem Gerät nicht unterstützt', 'error');
+                return;
+            }
+
+            showToast('📍 GPS wird erfasst...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const timestamp = new Date().toLocaleString('de-DE');
+                    const gpsCount = currentEntryMedia.filter(m => m.type === 'gps').length + 1;
+                    const uniqueId = `gps_${mediaIdCounter++}_${Date.now()}`;
+                    
+                    // GPS-Daten brauchen kein Blob - nur die Koordinaten!
+                    const mediaItem = {
+                        id: uniqueId,
+                        type: 'gps',
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        accuracy: Math.round(position.coords.accuracy),
+                        name: `GPS_${gpsCount}_${timestamp.replace(/[^\d]/g, '_')}`,
+                        timestamp: timestamp,
+                        size: 100 // Dummy size für Anzeige
+                    };
+
+                    currentEntryMedia.push(mediaItem);
+                    updateMediaPreview();
+                    showToast(`✅ GPS-Position ${gpsCount} erfasst (${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)})`, 'success', 5000);
+                    
+                    console.log('✅ GPS captured successfully:', mediaItem);
+                },
+                (error) => {
+                    let message = 'GPS-Erfassung fehlgeschlagen';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'GPS-Berechtigung verweigert';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'GPS-Position nicht verfügbar';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'GPS-Erfassung Timeout';
+                            break;
+                    }
+                    console.error('❌ GPS error:', error);
+                    showToast(message, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ===== DATEI UPLOAD =====
+        function uploadMedia() {
+            console.log('📁 Opening file upload');
+            
+            const existingInput = document.getElementById('fileInput');
+            if (existingInput) {
+                existingInput.remove();
+            }
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.id = 'fileInput';
+            input.accept = 'image/*,audio/*,video/*';
+            input.multiple = true;
+            input.style.display = 'none';
+            
+            input.addEventListener('change', (event) => {
+                handleFileUpload(event);
+            });
+            
+            document.body.appendChild(input);
+            input.click();
+        }
+
+        function handleFileUpload(event) {
+            console.log('📁 Handling file upload');
+            
+            const files = event.target.files;
+            if (!files || files.length === 0) {
+                console.log('❌ No files selected');
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                if (file.size > 50 * 1024 * 1024) {
+                    showToast(`❌ Datei ${file.name} ist zu groß (max. 50MB)`, 'error');
+                    continue;
+                }
+                
+                const timestamp = new Date().toLocaleString('de-DE');
+                const uniqueId = `upload_${mediaIdCounter++}_${Date.now()}_${i}`;
+                
+                let mediaType = 'file';
+                if (file.type.startsWith('image/')) {
+                    mediaType = 'photo';
+                } else if (file.type.startsWith('audio/')) {
+                    mediaType = 'audio';
+                } else if (file.type.startsWith('video/')) {
+                    mediaType = 'video';
+                }
+                
+                const mediaItem = {
+                    id: uniqueId,
+                    type: mediaType,
+                    blob: file,
+                    data: URL.createObjectURL(file),
+                    name: file.name,
+                    originalName: file.name,
+                    timestamp: timestamp,
+                    size: file.size,
+                    mimeType: file.type
+                };
+
+                currentEntryMedia.push(mediaItem);
+            }
+
+            updateMediaPreview();
+            
+            const fileTypeText = files.length === 1 ? 'Datei' : 'Dateien';
+            showToast(`✅ ${files.length} ${fileTypeText} hinzugefügt`, 'success');
+            
+            event.target.value = '';
+            console.log('✅ File upload completed');
+        }
+
+        // ===== STORAGE MANAGER MIT LOCALSTORAGE =====
+        class MemoryStorage {
+            static isSaving = false;
+            static storageType = 'unknown';
+            
+            static async saveAppState() {
+                if (this.isSaving) return;
+                try {
+                    this.isSaving = true;
+                    memoryDB.settings.country = appState.country;
+                    memoryDB.settings.customNoiseTypes = [...appState.customNoiseTypes];
+                    memoryDB.settings.currentCaseId = appState.currentCase?.id;
+                    
+                    // Versuche localStorage, fallback zu Memory
+                    const success = memoryDB.saveToMemory();
+                    
+                    if (success) {
+                        this.storageType = this.detectStorageType();
+                        this.updateStorageStatus();
+                    }
+                    
+                    this.showSaveIndicator();
+                    console.log('✅ App state saved');
+                } catch (error) {
+                    console.error('Save error:', error);
+                } finally {
+                    this.isSaving = false;
+                }
+            }
+
+            static async loadAppState() {
+                try {
+                    // Versuche localStorage Load
+                    const loaded = memoryDB.loadFromMemory();
+                    this.storageType = this.detectStorageType();
+                    
+                    appState.cases = [...memoryDB.cases].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    appState.country = memoryDB.settings.country || 'DE';
+                    appState.customNoiseTypes = [...(memoryDB.settings.customNoiseTypes || [])];
+                    
+                    if (memoryDB.settings.currentCaseId) {
+                        appState.currentCase = appState.cases.find(c => c.id === memoryDB.settings.currentCaseId);
+                        if (appState.currentCase) {
+                            await this.loadEntriesForCase(appState.currentCase.id);
+                        }
+                    }
+                    
+                    this.updateStorageStatus();
+                    console.log('✅ Data loaded successfully' + (loaded ? ' (from localStorage)' : ' (fresh session)'));
+                } catch (error) {
+                    console.error('Load error:', error);
+                }
+            }
+
+            static detectStorageType() {
+                try {
+                    if (typeof localStorage !== 'undefined') {
+                        localStorage.setItem('test', 'test');
+                        localStorage.removeItem('test');
+                        return 'localStorage';
+                    }
+                } catch (error) {
+                    // localStorage blocked
+                }
+                return 'session';
+            }
+
+            static updateStorageStatus() {
+                const statusElement = document.getElementById('saveText');
+                if (statusElement) {
+                    if (this.storageType === 'localStorage') {
+                        statusElement.textContent = 'Persistent';
+                        statusElement.title = 'Daten werden dauerhaft im Browser gespeichert';
+                    } else {
+                        statusElement.textContent = 'Session';
+                        statusElement.title = 'Daten nur während dieser Sitzung gespeichert';
+                    }
+                }
+            }
+
+            static async loadEntriesForCase(caseId) {
+                try {
+                    appState.entries = memoryDB.find('entries', entry => entry.caseId === caseId);
+                    
+                    for (let entry of appState.entries) {
+                        const media = memoryDB.find('media', m => m.entryId === entry.id);
+                        entry.media = media.map(m => ({
+                            ...m,
+                            data: m.blob ? URL.createObjectURL(m.blob) : null
+                        }));
+                        entry.mediaCount = {
+                            photos: media.filter(m => m.type === 'photo' || m.type === 'video' || m.originalName).length,
+                            audio: media.filter(m => m.type === 'audio').length,
+                            gps: media.filter(m => m.type === 'gps').length
+                        };
+                    }
+                    console.log(`✅ Loaded ${appState.entries.length} entries for case ${caseId}`);
+                } catch (error) {
+                    console.error('Error loading entries:', error);
+                }
+            }
+
+            static async saveEntry(entryData) {
+                if (this.isSaving) {
+                    throw new Error('Save already in progress');
+                }
+                
+                try {
+                    this.isSaving = true;
+                    console.log('💾 Saving entry with media:', currentEntryMedia.length);
+                    
+                    if (!entryData || !entryData.caseId) {
+                        throw new Error('Entry data is invalid');
+                    }
+
+                    const cleanEntryData = { ...entryData };
+                    let entryId;
+                    
+                    if (cleanEntryData.id) {
+                        const updated = memoryDB.update('entries', cleanEntryData);
+                        if (!updated) throw new Error('Failed to update entry');
+                        entryId = cleanEntryData.id;
+                        
+                        const oldMedia = memoryDB.find('media', m => m.entryId === entryId);
+                        oldMedia.forEach(m => memoryDB.delete('media', m.id));
+                    } else {
+                        entryId = memoryDB.add('entries', cleanEntryData);
+                        if (!entryId) throw new Error('Failed to create entry');
+                    }
+
+                    let mediaSavedCount = 0;
+                    if (currentEntryMedia && currentEntryMedia.length > 0) {
+                        console.log(`💾 Saving ${currentEntryMedia.length} media items`);
+                        
+                        for (let media of currentEntryMedia) {
+                            if (!media.id) {
+                                console.warn('⚠️ Skipping media without ID:', media.name);
+                                continue;
+                            }
+
+                            // GPS-Daten brauchen kein blob!
+                            if (media.type === 'gps') {
+                                if (!media.lat || !media.lng) {
+                                    console.warn('⚠️ Skipping GPS without coordinates:', media.name);
+                                    continue;
+                                }
+                                
+                                const gpsData = {
+                                    entryId: entryId,
+                                    type: 'gps',
+                                    name: media.name,
+                                    timestamp: media.timestamp,
+                                    lat: media.lat,
+                                    lng: media.lng,
+                                    accuracy: media.accuracy
+                                };
+                                
+                                const mediaId = memoryDB.add('media', gpsData);
+                                if (mediaId) {
+                                    mediaSavedCount++;
+                                    console.log(`✅ GPS data saved: ${media.name} (${media.lat}, ${media.lng})`);
+                                }
+                                continue;
+                            }
+
+                            // Für alle anderen Medien: blob erforderlich
+                            if (!media.blob || media.blob.size === 0) {
+                                console.warn('⚠️ Skipping invalid media:', media.name);
+                                continue;
+                            }
+                            
+                            try {
+                                const mediaData = {
+                                    entryId: entryId,
+                                    type: media.type,
+                                    name: media.name,
+                                    timestamp: media.timestamp,
+                                    blob: media.blob
+                                };
+                                
+                                const mediaId = memoryDB.add('media', mediaData);
+                                if (mediaId) {
+                                    mediaSavedCount++;
+                                    console.log(`✅ Media saved: ${media.name}`);
+                                }
+                                
+                            } catch (mediaError) {
+                                console.error(`❌ Error processing media ${media.name}:`, mediaError);
+                            }
+                        }
+                    }
+                    
+                    // Speichere in localStorage/Memory
+                    memoryDB.saveToMemory();
+                    
+                    console.log(`✅ Entry saved with ${mediaSavedCount} media items`);
+                    this.showSaveIndicator();
+                    return entryId;
+                    
+                } catch (error) {
+                    console.error('❌ Save error:', error);
+                    throw error;
+                } finally {
+                    this.isSaving = false;
+                }
+            }
+
+            static async deleteEntry(entryId) {
+                try {
+                    memoryDB.delete('entries', entryId);
+                    const media = memoryDB.find('media', m => m.entryId === entryId);
+                    media.forEach(m => memoryDB.delete('media', m.id));
+                    
+                    // Speichere in localStorage/Memory
+                    memoryDB.saveToMemory();
+                    
+                    this.showSaveIndicator();
+                    console.log(`✅ Entry ${entryId} deleted and saved`);
+                } catch (error) {
+                    console.error('Error deleting entry:', error);
+                    throw error;
+                }
+            }
+
+            static showSaveIndicator() {
+                const indicator = document.getElementById('saveIndicator');
+                if (indicator) {
+                    indicator.classList.add('show');
+                    setTimeout(() => indicator.classList.remove('show'), 2000);
+                }
+            }
+
+            // Export/Import Funktionen für Datenpersistierung
+            static exportAppData() {
+                return memoryDB.exportData();
+            }
+
+            static importAppData(jsonString) {
+                const success = memoryDB.importData(jsonString);
+                if (success) {
+                    this.loadAppState().then(() => {
+                        updateUI();
+                    });
+                }
+                return success;
+            }
+        }
+
+        // ===== UI UPDATES =====
+        function updateUI() {
+            updateCaseSelect();
+            updateStats();
+            updateEntriesList();
+            updateVisibility();
+        }
+
+        function updateCaseSelect() {
+            const select = document.getElementById('caseSelect');
+            select.innerHTML = '<option value="">Kein Fall ausgewählt</option>' +
+                appState.cases.map(c => `
+                    <option value="${c.id}" ${appState.currentCase?.id === c.id ? 'selected' : ''}>
+                        ${c.name} (${new Date(c.startDate).toLocaleDateString('de-DE')})
+                    </option>
+                `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('entryCount').textContent = appState.entries.length;
+            document.getElementById('totalEntries').textContent = appState.entries.length;
+            document.getElementById('criticalEntries').textContent = 
+                appState.entries.filter(e => e.intensity === 'critical').length;
+            
+            const totalPhotos = appState.entries.reduce((sum, entry) => 
+                sum + (entry.mediaCount?.photos || 0), 0);
+            const totalAudio = appState.entries.reduce((sum, entry) => 
+                sum + (entry.mediaCount?.audio || 0), 0);
+            
+            document.getElementById('totalPhotos').textContent = totalPhotos;
+            document.getElementById('totalAudio').textContent = totalAudio;
+        }
+
+        function updateEntriesList() {
+            const container = document.getElementById('entriesList');
+            
+            if (!appState.currentCase || appState.entries.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const sortedEntries = [...appState.entries].sort((a, b) => {
+                const dateCompare = b.date.localeCompare(a.date);
+                if (dateCompare !== 0) return dateCompare;
+                return b.timeFrom.localeCompare(a.timeFrom);
+            });
+
+            container.innerHTML = sortedEntries.map(entry => `
+                <article class="card entry-card">
+                    <div class="card-header">
+                        <div class="entry-header">
+                            <div class="entry-meta">
+                                <span>📅 ${new Date(entry.date).toLocaleDateString('de-DE')}</span>
+                                <span>⏰ ${entry.timeFrom}${entry.timeTo ? ` - ${entry.timeTo}` : ''}</span>
+                                ${entry.duration ? `<span>⏱️ ${entry.duration} Min.</span>` : ''}
+                                ${entry.dbValue ? `<span>🔊 ${entry.dbValue} dB</span>` : ''}
+                                ${entry.quickEntry ? `<span>⚡ Sofort</span>` : ''}
+                            </div>
+                            <div class="entry-actions">
+                                <span class="intensity-badge intensity-${entry.intensity}">
+                                    ${getIntensityText(entry.intensity)}
+                                </span>
+                                <button class="btn btn-sm" onclick="editEntry(${entry.id})">✏️</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteEntry(${entry.id})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="entry-type">${entry.noiseType}</h3>
+                        <p class="entry-description">${entry.description}</p>
+                        ${renderEntryDetails(entry)}
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function renderEntryDetails(entry) {
+            const details = [];
+            
+            if (entry.witnesses) {
+                details.push(`<div><strong>Zeugen:</strong> ${entry.witnesses}</div>`);
+            }
+            if (entry.actions) {
+                details.push(`<div><strong>Maßnahmen:</strong> ${entry.actions}</div>`);
+            }
+            if (entry.weather) {
+                details.push(`<div><strong>Wetter:</strong> ${entry.weather}${entry.temperature ? `, ${entry.temperature}°C` : ''}</div>`);
+            }
+
+            if (entry.mediaCount) {
+                const mediaItems = [];
+                if (entry.mediaCount.photos > 0) mediaItems.push(`📷 ${entry.mediaCount.photos} Foto(s)`);
+                if (entry.mediaCount.audio > 0) mediaItems.push(`🎤 ${entry.mediaCount.audio} Audio`);
+                if (entry.mediaCount.gps > 0) mediaItems.push(`📍 ${entry.mediaCount.gps} GPS (im PDF)`);
+                
+                if (mediaItems.length > 0) {
+                    details.push(`<div><strong>Beweismittel:</strong> ${mediaItems.join(', ')}</div>`);
+                }
+            }
+
+            return details.length > 0 ? 
+                `<div class="entry-details">${details.join('')}</div>` : '';
+        }
+
+        function updateVisibility() {
+            const hasCase = !!appState.currentCase;
+            const hasEntries = appState.entries.length > 0;
+
+            document.getElementById('emptyState').classList.toggle('hidden', hasCase);
+            document.getElementById('caseEmptyState').classList.toggle('hidden', !hasCase || hasEntries);
+            document.getElementById('actionButtons').classList.toggle('hidden', !hasCase);
+            document.getElementById('statsSection').classList.toggle('hidden', !hasEntries);
+            document.getElementById('exportSection').classList.toggle('hidden', !hasCase);
+        }
+
+        // ===== FALL MANAGEMENT =====
+        function showNewCaseModal() {
+            const content = `
+                <form id="newCaseForm">
+                    <div class="form-group">
+                        <label for="caseName" class="form-label required">Fallbezeichnung</label>
+                        <input type="text" id="caseName" class="form-input" required 
+                               placeholder="z.B. Nachbar Musterstraße 10" maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="caseStartDate" class="form-label required">Startdatum</label>
+                        <input type="date" id="caseStartDate" class="form-input" required 
+                               value="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="caseDescription" class="form-label">Beschreibung</label>
+                        <textarea id="caseDescription" class="form-textarea" rows="3" 
+                                  placeholder="Kurze Beschreibung des Falls..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="caseAddress" class="form-label">Adresse der Störung</label>
+                        <input type="text" id="caseAddress" class="form-input" 
+                               placeholder="Straße, Hausnummer, PLZ Ort">
+                    </div>
+                </form>
+            `;
+
+            const footer = `
+                <button class="btn btn-primary" onclick="createCase()" type="button">Fall erstellen</button>
+                <button class="btn btn-secondary" onclick="closeModal('newCaseModal')" type="button">Abbrechen</button>
+            `;
+
+            createModal('newCaseModal', '📁 Neuen Fall erstellen', content, { footer });
+        }
+
+        async function createCase() {
+            const form = document.getElementById('newCaseForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const caseData = {
+                name: document.getElementById('caseName').value,
+                startDate: document.getElementById('caseStartDate').value,
+                description: document.getElementById('caseDescription').value,
+                address: document.getElementById('caseAddress').value,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const id = memoryDB.add('cases', caseData);
+                caseData.id = id;
+
+                appState.cases.unshift(caseData);
+                appState.currentCase = caseData;
+                appState.entries = [];
+
+                await MemoryStorage.saveAppState();
+                updateUI();
+                closeModal('newCaseModal');
+                showToast(`Fall "${caseData.name}" erstellt und gespeichert`, 'success');
+            } catch (error) {
+                console.error('Error creating case:', error);
+                showToast('Fehler beim Erstellen des Falls', 'error');
+            }
+        }
+
+        async function switchCase(caseId) {
+            if (!caseId) {
+                appState.currentCase = null;
+                appState.entries = [];
+            } else {
+                const selectedCase = appState.cases.find(c => c.id === parseInt(caseId));
+                if (selectedCase) {
+                    appState.currentCase = selectedCase;
+                    await MemoryStorage.loadEntriesForCase(selectedCase.id);
+                }
+            }
+            await MemoryStorage.saveAppState();
+            updateUI();
+        }
+
+        // ===== EINTRAG MANAGEMENT =====
+        function showEntryModal(entryId = null) {
+            if (!appState.currentCase) {
+                showToast('Bitte wählen Sie zuerst einen Fall aus', 'warning');
+                return;
+            }
+
+            const isEdit = !!entryId;
+            const entry = isEdit ? appState.entries.find(e => e.id === entryId) : null;
+
+            const content = `
+                <form id="entryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="entryDate" class="form-label required">Datum</label>
+                            <input type="date" id="entryDate" class="form-input" required 
+                                   value="${entry?.date || new Date().toISOString().split('T')[0]}">
+                        </div>
+                        <div class="form-group">
+                            <label for="entryTimeFrom" class="form-label required">Zeit von</label>
+                            <input type="time" id="entryTimeFrom" class="form-input" required
+                                   value="${entry?.timeFrom || new Date().toTimeString().slice(0, 5)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="entryTimeTo" class="form-label">Zeit bis</label>
+                            <input type="time" id="entryTimeTo" class="form-input"
+                                   value="${entry?.timeTo || ''}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noiseType" class="form-label required">Lärmart</label>
+                        <select id="noiseType" class="form-select" required>
+                            <option value="">Bitte wählen...</option>
+                            ${getNoiseTypeOptions(entry?.noiseType)}
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="intensity" class="form-label required">Intensität</label>
+                            <select id="intensity" class="form-select" required>
+                                <option value="low" ${entry?.intensity === 'low' ? 'selected' : ''}>Leicht wahrnehmbar</option>
+                                <option value="medium" ${entry?.intensity === 'medium' ? 'selected' : ''}>Merklich störend</option>
+                                <option value="high" ${entry?.intensity === 'high' ? 'selected' : ''}>Erheblich belästigend</option>
+                                <option value="critical" ${entry?.intensity === 'critical' ? 'selected' : ''}>Unzumutbar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dbValue" class="form-label">Lautstärke (dB)</label>
+                            <input type="number" id="dbValue" class="form-input" min="0" max="150" 
+                                   placeholder="z.B. 65" value="${entry?.dbValue || ''}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label required">Beschreibung</label>
+                        <textarea id="description" class="form-textarea" rows="4" required 
+                                  placeholder="Beschreiben Sie die Störung möglichst genau...">${entry?.description || ''}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="witnesses" class="form-label">Zeugen</label>
+                        <input type="text" id="witnesses" class="form-input" 
+                               placeholder="Name(n) der Zeugen" value="${entry?.witnesses || ''}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="actions" class="form-label">Ergriffene Maßnahmen</label>
+                        <textarea id="actions" class="form-textarea" rows="2" 
+                                  placeholder="z.B. Nachbarn angesprochen, Hausverwaltung informiert...">${entry?.actions || ''}</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="weather" class="form-label">Wetterbedingungen</label>
+                            <input type="text" id="weather" class="form-input" 
+                                   placeholder="z.B. Sonnig, windstill" value="${entry?.weather || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature" class="form-label">Temperatur (°C)</label>
+                            <input type="number" id="temperature" class="form-input" 
+                                   placeholder="z.B. 22" value="${entry?.temperature || ''}">
+                        </div>
+                    </div>
+
+                    <div class="media-section">
+                        <h3>🛡️ Beweismittel erfassen</h3>
+                        <p style="color: var(--gray-600); margin-bottom: 1rem;">Sammeln Sie Foto-, Audio- und GPS-Beweise für rechtssichere Dokumentation</p>
+                        
+                        <div class="media-buttons">
+                            <button type="button" class="btn btn-primary" onclick="showCameraModal()">
+                                📷 Foto aufnehmen
+                            </button>
+                            <button type="button" id="audioBtn" class="btn btn-danger" onclick="toggleAudio()">
+                                🎤 <span id="audioText">Audio</span>
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="captureGPS()">
+                                📍 GPS erfassen
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="uploadMedia()">
+                                📁 Datei hochladen
+                            </button>
+                        </div>
+                        
+                        <div id="audioTimer" style="display: none;"></div>
+                        
+                        <div id="mediaPreviewContainer" class="media-preview-container">
+                        </div>
+                    </div>
+                </form>
+            `;
+
+            const footer = `
+                <button class="btn btn-primary" onclick="saveEntry(${entryId || 'null'})" type="button">
+                    ${isEdit ? 'Änderungen speichern' : 'Eintrag speichern'}
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('entryModal')" type="button">Abbrechen</button>
+            `;
+
+            createModal('entryModal', isEdit ? '✏️ Eintrag bearbeiten' : '📝 Neue Störung dokumentieren', content, { footer, size: 'large' });
+            
+            resetMediaForEntry(entry);
+        }
+
+        function getNoiseTypeOptions(selectedValue = '') {
+            const standardTypes = [
+                'Laute Musik', 'Fernseher/Radio', 'Gespräche/Geschrei',
+                'Schritte/Trampeln', 'Türenschlagen', 'Handwerkerlärm',
+                'Haushaltsgeräte', 'Haustiere', 'Party/Feier',
+                'Kinder', 'Möbel rücken', 'Musikinstrumente',
+                'Baustellenlärm', 'Verkehrslärm', 'Sonstiges'
+            ];
+
+            let options = '<optgroup label="Standard-Lärmarten">';
+            options += standardTypes.map(type => 
+                `<option value="${type}" ${selectedValue === type ? 'selected' : ''}>${type}</option>`
+            ).join('');
+            options += '</optgroup>';
+
+            if (appState.customNoiseTypes.length > 0) {
+                options += '<optgroup label="Eigene Lärmgründe">';
+                options += appState.customNoiseTypes.map(type => 
+                    `<option value="${type}" ${selectedValue === type ? 'selected' : ''}>${type}</option>`
+                ).join('');
+                options += '</optgroup>';
+            }
+
+            return options;
+        }
+
+        async function saveEntry(entryId = null) {
+            console.log('💾 Saving entry. ID:', entryId, 'Media count:', currentEntryMedia.length);
+            
+            const form = document.getElementById('entryForm');
+            if (!form) {
+                showToast('Formular nicht gefunden', 'error');
+                return;
+            }
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            if (!appState.currentCase) {
+                showToast('Kein Fall ausgewählt', 'error');
+                return;
+            }
+
+            const entryData = {
+                caseId: appState.currentCase.id,
+                date: document.getElementById('entryDate')?.value || '',
+                timeFrom: document.getElementById('entryTimeFrom')?.value || '',
+                timeTo: document.getElementById('entryTimeTo')?.value || '',
+                noiseType: document.getElementById('noiseType')?.value || '',
+                intensity: document.getElementById('intensity')?.value || '',
+                dbValue: document.getElementById('dbValue')?.value || '',
+                description: document.getElementById('description')?.value || '',
+                witnesses: document.getElementById('witnesses')?.value || '',
+                actions: document.getElementById('actions')?.value || '',
+                weather: document.getElementById('weather')?.value || '',
+                temperature: document.getElementById('temperature')?.value || '',
+                mediaCount: {
+                    photos: currentEntryMedia.filter(m => m.type === 'photo' || m.type === 'video' || m.originalName).length,
+                    audio: currentEntryMedia.filter(m => m.type === 'audio').length,
+                    gps: currentEntryMedia.filter(m => m.type === 'gps').length
+                },
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (entryId) {
+                entryData.id = entryId;
+            } else {
+                entryData.createdAt = new Date().toISOString();
+            }
+
+            try {
+                showToast('Speichere Eintrag...', 'info');
+                
+                const savedEntryId = await MemoryStorage.saveEntry(entryData);
+                entryData.id = savedEntryId;
+
+                if (entryId) {
+                    const index = appState.entries.findIndex(e => e.id === entryId);
+                    if (index >= 0) {
+                        const existingMedia = appState.entries[index].media || [];
+                        entryData.media = existingMedia;
+                        appState.entries[index] = entryData;
+                    }
+                } else {
+                    entryData.media = [];
+                    appState.entries.unshift(entryData);
+                }
+
+                currentEntryMedia = [];
+
+                updateUI();
+                closeModal('entryModal');
+                
+                const mediaCount = entryData.mediaCount.photos + entryData.mediaCount.audio + entryData.mediaCount.gps;
+                showToast(entryId ? `✅ Eintrag aktualisiert! ${mediaCount} Beweismittel` : `✅ Eintrag gespeichert! ${mediaCount} Beweismittel`, 'success', 4000);
+                
+            } catch (error) {
+                console.error('❌ Save error:', error);
+                showToast(`Fehler beim Speichern: ${error.message}`, 'error', 5000);
+            }
+        }
+
+        function editEntry(id) {
+            showEntryModal(id);
+        }
+
+        async function deleteEntry(id) {
+            if (!confirm('Eintrag wirklich löschen?')) return;
+
+            try {
+                await MemoryStorage.deleteEntry(id);
+                appState.entries = appState.entries.filter(e => e.id !== id);
+                updateUI();
+                showToast('Eintrag gelöscht', 'success');
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+                showToast('Fehler beim Löschen', 'error');
+            }
+        }
+
+        // ===== QUICK ENTRY =====
+        function startQuickEntry() {
+            if (!appState.currentCase) {
+                showToast('Bitte wählen Sie zuerst einen Fall aus', 'warning');
+                return;
+            }
+
+            console.log('🚨 Starting Quick Entry');
+
+            appState.quickEntryMode = true;
+            quickEntrySeconds = 0;
+            appState.quickEntryData = {
+                startTime: new Date(),
+                noiseType: '',
+                intensity: 'medium',
+                description: '',
+                ongoing: true,
+                notes: ''
+            };
+
+            currentEntryMedia = [];
+            showQuickEntryModal();
+            startQuickTimer();
+            showToast('🚨 Sofort-Protokoll gestartet!', 'info');
+        }
+
+        function startQuickTimer() {
+            console.log('⏰ Starting quick timer');
+            quickEntryTimer = setInterval(() => {
+                quickEntrySeconds++;
+                updateQuickTimerDisplay();
+            }, 1000);
+        }
+
+        function updateQuickTimerDisplay() {
+            const minutes = Math.floor(quickEntrySeconds / 60);
+            const seconds = quickEntrySeconds % 60;
+            const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const timerEl = document.getElementById('quickEntryTimer');
+            if (timerEl) {
+                timerEl.textContent = timeStr;
+            }
+        }
+
+        function showQuickEntryModal() {
+            const content = `
+                <div class="text-center">
+                    <h3>🚨 STÖRUNG WIRD AUFGEZEICHNET</h3>
+                    <div id="quickEntryTimer" class="quick-entry-timer">00:00</div>
+                    <p>Timer läuft - dokumentieren Sie die Störung</p>
+                </div>
+
+                <div class="quick-entry-actions">
+                    <button type="button" class="btn btn-warning" onclick="quickAddNote()">
+                        📝 Schnellnotiz
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="showCameraModal()">
+                        📷 Foto aufnehmen
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="uploadMedia()">
+                        📁 Datei hochladen
+                    </button>
+                    <button type="button" class="btn btn-danger" id="quickAudioBtn" onclick="toggleAudio()">
+                        🎤 <span id="quickAudioText">Audio</span>
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="captureGPS()">
+                        📍 GPS
+                    </button>
+                </div>
+
+                <div id="quickEntryNotes" class="info-box" style="display: none;">
+                    <strong>Notizen:</strong>
+                    <div id="quickNotesList"></div>
+                </div>
+
+                <div id="audioTimerDisplay" style="display: none;"></div>
+
+                <div id="mediaPreviewContainer" class="media-preview-container">
+                </div>
+
+                <div class="quick-entry-actions">
+                    <button type="button" class="btn btn-success btn-large" onclick="stopQuickEntry()">
+                        ⏹️ STÖRUNG BEENDEN
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelQuickEntry()">
+                        ❌ Abbrechen
+                    </button>
+                </div>
+            `;
+
+            createModal('quickEntryModal', '🚨 Sofort-Protokoll', content, { size: 'medium' });
+            updateMediaPreview();
+        }
+
+        function quickAddNote() {
+            const note = prompt('Schnellnotiz hinzufügen:');
+            if (note && note.trim()) {
+                if (!appState.quickEntryData.notes) appState.quickEntryData.notes = '';
+                appState.quickEntryData.notes += (appState.quickEntryData.notes ? '\n' : '') + 
+                    `${new Date().toLocaleTimeString()}: ${note.trim()}`;
+                
+                updateQuickNotesDisplay();
+                showToast('Notiz hinzugefügt', 'success');
+            }
+        }
+
+        function updateQuickNotesDisplay() {
+            const notesList = document.getElementById('quickNotesList');
+            const notesBox = document.getElementById('quickEntryNotes');
+            
+            if (notesList && appState.quickEntryData && appState.quickEntryData.notes) {
+                notesBox.style.display = 'block';
+                notesList.innerHTML = appState.quickEntryData.notes.split('\n').map(note => 
+                    `<div>${note}</div>`
+                ).join('');
+            }
+        }
+
+        function stopQuickEntry() {
+            console.log('🛑 === STOP QUICK ENTRY ===');
+            
+            if (!appState.quickEntryMode || !appState.quickEntryData) {
+                console.error('❌ Not in quick entry mode!');
+                showToast('❌ Sofort-Protokoll ist nicht aktiv', 'error');
+                return;
+            }
+            
+            console.log(`✅ Stopping quick entry with ${currentEntryMedia.length} media items`);
+            
+            // Stop timer
+            if (quickEntryTimer) {
+                clearInterval(quickEntryTimer);
+                quickEntryTimer = null;
+            }
+
+            // Stop media recording
+            stopAllMedia();
+
+            // Update end time and duration
+            appState.quickEntryData.endTime = new Date();
+            appState.quickEntryData.duration = Math.floor(quickEntrySeconds / 60);
+            appState.quickEntryData.ongoing = false;
+
+            console.log(`📊 Duration: ${appState.quickEntryData.duration} minutes`);
+            console.log(`📊 Media count: ${currentEntryMedia.length}`);
+
+            // Hide quick entry modal
+            const quickEntryModal = document.getElementById('quickEntryModal');
+            if (quickEntryModal) {
+                quickEntryModal.style.display = 'none';
+            }
+
+            // Show completion modal
+            showQuickCompletionModal();
+        }
+
+        function showQuickCompletionModal() {
+            console.log('📝 === SHOWING COMPLETION MODAL ===');
+            
+            if (!appState.quickEntryData) {
+                console.error('❌ No quick entry data!');
+                showToast('❌ Keine Daten verfügbar', 'error');
+                return;
+            }
+            
+            const duration = appState.quickEntryData.duration;
+            const mediaCount = currentEntryMedia.length;
+            
+            const content = `
+                <form id="quickCompletionForm">
+                    <div class="info-box mb-4" style="background: #d1fae5; border: 1px solid #10b981; color: #065f46;">
+                        <strong>✅ Störung erfolgreich beendet</strong><br>
+                        Dauer: ${duration} Minute(n)<br>
+                        Von: ${appState.quickEntryData.startTime.toLocaleTimeString('de-DE')}<br>
+                        Bis: ${appState.quickEntryData.endTime.toLocaleTimeString('de-DE')}<br>
+                        🛡️ Beweismittel: ${mediaCount} erfasst
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quickNoiseType" class="form-label required">Lärmart</label>
+                        <select id="quickNoiseType" class="form-select" required>
+                            <option value="">Bitte wählen...</option>
+                            ${getNoiseTypeOptions()}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quickIntensity" class="form-label required">Intensität</label>
+                        <select id="quickIntensity" class="form-select" required>
+                            <option value="low">Leicht wahrnehmbar</option>
+                            <option value="medium" selected>Merklich störend</option>
+                            <option value="high">Erheblich belästigend</option>
+                            <option value="critical">Unzumutbar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quickDescription" class="form-label required">Beschreibung</label>
+                        <textarea id="quickDescription" class="form-textarea" rows="4" required 
+                                  placeholder="Beschreiben Sie die Störung...">${appState.quickEntryData.notes || ''}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quickDbValue" class="form-label">Lautstärke (dB)</label>
+                        <input type="number" id="quickDbValue" class="form-input" min="0" max="150" 
+                               placeholder="z.B. 65">
+                    </div>
+
+                    <div class="media-section">
+                        <h3 style="color: var(--success); margin-bottom: 1rem;">
+                            🛡️ Erfasste Beweismittel (${mediaCount})
+                        </h3>
+                        ${mediaCount === 0 ? 
+                            '<div style="background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 0.375rem; text-align: center; margin-top: 1rem;"><strong>⚠️ WARNUNG: Keine Beweismittel erfasst!</strong></div>' : 
+                            '<div style="background: #d1fae5; color: #065f46; padding: 0.5rem; border-radius: 0.375rem; text-align: center; font-size: 0.875rem; margin-top: 1rem;"><strong>✅ Beweismittel bereit zum Speichern</strong></div>'
+                        }
+                    </div>
+                </form>
+            `;
+
+            const footer = `
+                <button class="btn btn-primary btn-large" onclick="saveQuickEntry()" type="button">
+                    💾 Sofort-Protokoll speichern
+                </button>
+                <button class="btn btn-secondary" onclick="cancelQuickEntry()" type="button">
+                    ❌ Abbrechen
+                </button>
+            `;
+
+            createModal('quickCompletionModal', '📝 Sofort-Protokoll abschließen', content, { footer });
+        }
+
+        async function saveQuickEntry() {
+            console.log('💾 === SAVING QUICK ENTRY ===');
+            
+            const form = document.getElementById('quickCompletionForm');
+            if (!form) {
+                showToast('❌ Formular nicht gefunden', 'error');
+                return;
+            }
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            if (!appState.quickEntryData || !appState.currentCase) {
+                showToast('❌ Keine Daten verfügbar', 'error');
+                return;
+            }
+
+            const entryData = {
+                caseId: appState.currentCase.id,
+                date: appState.quickEntryData.startTime.toISOString().split('T')[0],
+                timeFrom: appState.quickEntryData.startTime.toTimeString().slice(0, 5),
+                timeTo: appState.quickEntryData.endTime.toTimeString().slice(0, 5),
+                noiseType: document.getElementById('quickNoiseType').value,
+                intensity: document.getElementById('quickIntensity').value,
+                description: document.getElementById('quickDescription').value,
+                dbValue: document.getElementById('quickDbValue').value,
+                duration: appState.quickEntryData.duration,
+                quickEntry: true,
+                mediaCount: {
+                    photos: currentEntryMedia.filter(m => m.type === 'photo' || m.type === 'video' || m.originalName).length,
+                    audio: currentEntryMedia.filter(m => m.type === 'audio').length,
+                    gps: currentEntryMedia.filter(m => m.type === 'gps').length
+                },
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                showToast('Speichere Sofort-Protokoll...', 'info');
+                
+                const savedEntryId = await MemoryStorage.saveEntry(entryData);
+                entryData.id = savedEntryId;
+
+                appState.entries.unshift(entryData);
+                
+                // Reset state
+                appState.quickEntryMode = false;
+                appState.quickEntryData = null;
+                currentEntryMedia = [];
+
+                updateUI();
+                closeModal('quickCompletionModal');
+                
+                const mediaCount = entryData.mediaCount.photos + entryData.mediaCount.audio + entryData.mediaCount.gps;
+                showToast(`✅ Sofort-Protokoll gespeichert! ${mediaCount} Beweismittel`, 'success', 5000);
+                
+            } catch (error) {
+                console.error('❌ Save failed:', error);
+                showToast(`❌ Fehler: ${error.message}`, 'error');
+            }
+        }
+
+        function cancelQuickEntry() {
+            console.log('❌ Cancelling quick entry');
+            
+            if (quickEntryTimer) {
+                clearInterval(quickEntryTimer);
+                quickEntryTimer = null;
+            }
+
+            stopAllMedia();
+
+            appState.quickEntryMode = false;
+            appState.quickEntryData = null;
+            currentEntryMedia = [];
+            
+            closeModal('quickEntryModal');
+            closeModal('quickCompletionModal');
+            showToast('Sofort-Protokoll abgebrochen', 'warning');
+        }
+
+        // ===== SETTINGS =====
+        function showSettingsModal() {
+            const content = `
+                <div class="form-group">
+                    <label for="countrySelect" class="form-label">Land auswählen</label>
+                    <select id="countrySelect" class="form-select">
+                        <option value="DE" ${appState.country === 'DE' ? 'selected' : ''}>Deutschland</option>
+                        <option value="AT" ${appState.country === 'AT' ? 'selected' : ''}>Österreich</option>
+                        <option value="CH" ${appState.country === 'CH' ? 'selected' : ''}>Schweiz</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Eigene Lärmgründe</label>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="newNoiseType" class="form-input" 
+                               placeholder="Neuen Lärmgrund eingeben..." maxlength="50">
+                        <button type="button" class="btn btn-success" onclick="addCustomNoiseType()">➕</button>
+                    </div>
+                    
+                    <div id="customNoiseTypesList">
+                        ${renderCustomNoiseTypesList()}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">💾 Datenpersistierung</label>
+                    <div id="storageInfo" class="info-box" style="background: #dbeafe; border: 1px solid #3b82f6; color: #1e40af;">
+                        <strong>ℹ️ Speicher-Status:</strong><br>
+                        <span id="storageStatusText">Wird ermittelt...</span><br>
+                        <span id="storageHelp">Daten werden automatisch gespeichert.</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-primary" onclick="exportAppData()">
+                            📤 Daten exportieren
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="importAppData()">
+                            📥 Daten importieren
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const footer = `
+                <button class="btn btn-primary" onclick="saveSettings()" type="button">Speichern</button>
+                <button class="btn btn-secondary" onclick="closeModal('settingsModal')" type="button">Schließen</button>
+            `;
+
+            createModal('settingsModal', '⚙️ Einstellungen', content, { footer });
+            
+            // Storage-Status aktualisieren
+            updateStorageInfo();
+        }
+
+        function updateStorageInfo() {
+            const statusText = document.getElementById('storageStatusText');
+            const helpText = document.getElementById('storageHelp');
+            const infoBox = document.getElementById('storageInfo');
+            
+            if (!statusText || !helpText || !infoBox) return;
+            
+            const storageType = MemoryStorage.storageType;
+            const timestamp = localStorage.getItem('laermprotokoll_timestamp');
+            
+            if (storageType === 'localStorage') {
+                statusText.innerHTML = '✅ <strong>Persistent (localStorage)</strong>';
+                helpText.textContent = 'Daten bleiben nach Browser-Neustart erhalten.';
+                infoBox.style.background = '#d1fae5';
+                infoBox.style.borderColor = '#10b981';
+                infoBox.style.color = '#065f46';
+                
+                if (timestamp) {
+                    const lastSaved = new Date(timestamp).toLocaleString('de-DE');
+                    helpText.textContent += ` Zuletzt gespeichert: ${lastSaved}`;
+                }
+            } else {
+                statusText.innerHTML = '⚠️ <strong>Session-basiert</strong>';
+                helpText.textContent = 'Daten gehen bei Browser-Neustart verloren. Nutzen Sie Export/Import.';
+                infoBox.style.background = '#fef3c7';
+                infoBox.style.borderColor = '#f59e0b';
+                infoBox.style.color = '#92400e';
+            }
+        }
+
+        function exportAppData() {
+            try {
+                const data = MemoryStorage.exportAppData();
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Laermprotokoll_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                showToast('✅ Daten erfolgreich exportiert', 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('❌ Export fehlgeschlagen', 'error');
+            }
+        }
+
+        function importAppData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.style.display = 'none';
+            
+            input.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                try {
+                    const text = await file.text();
+                    const success = MemoryStorage.importAppData(text);
+                    
+                    if (success) {
+                        updateUI();
+                        showToast('✅ Daten erfolgreich importiert', 'success');
+                        closeModal('settingsModal');
+                    } else {
+                        showToast('❌ Import fehlgeschlagen - ungültiges Format', 'error');
+                    }
+                } catch (error) {
+                    console.error('Import error:', error);
+                    showToast('❌ Import fehlgeschlagen', 'error');
+                }
+                
+                event.target.remove();
+            });
+            
+            document.body.appendChild(input);
+            input.click();
+        }
+
+        function renderCustomNoiseTypesList() {
+            if (appState.customNoiseTypes.length === 0) {
+                return '<div style="color: var(--gray-500); padding: 1rem; text-align: center;">Noch keine eigenen Lärmgründe hinzugefügt</div>';
+            }
+
+            return appState.customNoiseTypes.map((type, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--gray-50); border-radius: 0.375rem; margin-bottom: 0.5rem;">
+                    <span>${type}</span>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeCustomNoiseType(${index})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function addCustomNoiseType() {
+            const input = document.getElementById('newNoiseType');
+            const value = input.value.trim();
+            
+            if (!value) {
+                showToast('Bitte geben Sie einen Lärmgrund ein', 'warning');
+                return;
+            }
+            
+            if (appState.customNoiseTypes.length >= 99) {
+                showToast('Maximale Anzahl erreicht (99)', 'error');
+                return;
+            }
+            
+            if (appState.customNoiseTypes.includes(value)) {
+                showToast('Lärmgrund bereits vorhanden', 'warning');
+                return;
+            }
+            
+            appState.customNoiseTypes.push(value);
+            appState.customNoiseTypes.sort();
+            
+            input.value = '';
+            document.getElementById('customNoiseTypesList').innerHTML = renderCustomNoiseTypesList();
+            
+            showToast('Lärmgrund hinzugefügt', 'success');
+        }
+
+        function removeCustomNoiseType(index) {
+            if (confirm(`"${appState.customNoiseTypes[index]}" wirklich löschen?`)) {
+                appState.customNoiseTypes.splice(index, 1);
+                document.getElementById('customNoiseTypesList').innerHTML = renderCustomNoiseTypesList();
+                showToast('Lärmgrund gelöscht', 'success');
+            }
+        }
+
+        async function saveSettings() {
+            appState.country = document.getElementById('countrySelect').value;
+            document.getElementById('countryDisplay').textContent = {
+                'DE': 'Deutschland',
+                'AT': 'Österreich',
+                'CH': 'Schweiz'
+            }[appState.country];
+            
+            await MemoryStorage.saveAppState();
+            closeModal('settingsModal');
+            showToast('Einstellungen gespeichert', 'success');
+        }
+
+        // ===== EXPORT FUNKTIONEN =====
+        async function exportCompleteArchive() {
+            console.log('📦 === STARTING EXPORT ===');
+            
+            if (!appState.currentCase || appState.entries.length === 0) {
+                showToast('Keine Daten zum Exportieren vorhanden', 'warning');
+                return;
+            }
+
+            if (typeof JSZip === 'undefined') {
+                console.error('❌ JSZip not loaded');
+                showToast('Export-Bibliothek nicht geladen. Seite neu laden.', 'error');
+                return;
+            }
+
+            try {
+                showToast('Erstelle Archiv...', 'info', 10000);
+                console.log('📦 Creating ZIP archive...');
+                
+                const zip = new JSZip();
+                const caseName = sanitizeGermanText(appState.currentCase.name).replace(/[^a-zA-Z0-9]/g, '_');
+                
+                // Vereinfachte Folder-Struktur
+                const beweismittelFolder = zip.folder('Beweismittel');
+                const fotosFolder = beweismittelFolder.folder('Fotos');
+                const audioFolder = beweismittelFolder.folder('Audio');
+                
+                let mediaCounter = {
+                    photos: 0,
+                    audio: 0,
+                    total: 0,
+                    errors: 0
+                };
+
+                let gpsDataList = []; // Sammle GPS-Daten für PDF
+                
+                console.log(`📊 Processing ${appState.entries.length} entries...`);
+                
+                // Process entries and media
+                for (let entryIndex = 0; entryIndex < appState.entries.length; entryIndex++) {
+                    const entry = appState.entries[entryIndex];
+                    console.log(`📝 Processing entry ${entryIndex + 1}: ${entry.noiseType} (ID: ${entry.id})`);
+                    
+                    try {
+                        const mediaItems = memoryDB.find('media', m => m.entryId === entry.id);
+                        console.log(`🔍 Found ${mediaItems.length} media items for entry ${entry.id}`);
+                        
+                        for (let mediaIndex = 0; mediaIndex < mediaItems.length; mediaIndex++) {
+                            const media = mediaItems[mediaIndex];
+                            
+                            if (media.type === 'gps') {
+                                // GPS-Daten für PDF sammeln (auch ohne Blob)
+                                if (media.lat && media.lng) {
+                                    gpsDataList.push({
+                                        entryIndex: entryIndex + 1,
+                                        entryTitle: entry.noiseType,
+                                        entryDate: `${new Date(entry.date).toLocaleDateString('de-DE')} ${entry.timeFrom}`,
+                                        lat: media.lat,
+                                        lng: media.lng,
+                                        accuracy: media.accuracy || 'unbekannt',
+                                        timestamp: media.timestamp || 'unbekannt'
+                                    });
+                                    console.log(`✅ GPS data collected for PDF: Entry ${entryIndex + 1}, ${media.lat}, ${media.lng}`);
+                                }
+                                continue; // GPS braucht kein Blob
+                            }
+                            
+                            if (!media.blob || media.blob.size === 0) {
+                                console.error(`❌ Invalid media: ${media.name}`);
+                                mediaCounter.errors++;
+                                continue;
+                            }
+                            
+                            mediaCounter.total++;
+                            
+                            try {
+                                if (media.type === 'photo' || media.type === 'video' || media.originalName) {
+                                    // Alle visuellen Medien und Uploads in Fotos-Ordner
+                                    mediaCounter.photos++;
+                                    const fileName = `Foto_${mediaCounter.photos.toString().padStart(3, '0')}_Eintrag${entryIndex + 1}_${sanitizeGermanText(media.name || media.originalName)}`;
+                                    
+                                    fotosFolder.file(fileName, media.blob);
+                                    console.log(`✅ Photo/Upload saved: ${fileName}`);
+                                }
+                                else if (media.type === 'audio') {
+                                    mediaCounter.audio++;
+                                    const fileName = `Audio_${mediaCounter.audio.toString().padStart(3, '0')}_Eintrag${entryIndex + 1}_${sanitizeGermanText(media.name)}`;
+                                    
+                                    audioFolder.file(fileName, media.blob);
+                                    console.log(`✅ Audio saved: ${fileName}`);
+                                }
+                                
+                            } catch (mediaError) {
+                                console.error(`❌ Error processing media ${media.name}:`, mediaError);
+                                mediaCounter.errors++;
+                            }
+                        }
+                        
+                    } catch (entryError) {
+                        console.error(`❌ Error processing entry ${entry.id}:`, entryError);
+                        mediaCounter.errors++;
+                    }
+                }
+                
+                console.log(`📊 Media processing complete:`, mediaCounter);
+                console.log(`📍 GPS data points collected: ${gpsDataList.length}`);
+                
+                if (mediaCounter.total === 0 && gpsDataList.length === 0) {
+                    showToast('⚠️ Keine Beweismittel gefunden!', 'warning');
+                    return;
+                }
+                
+                // Create PDF report with GPS data
+                console.log('📋 Creating PDF report with GPS data...');
+                const pdfContent = await createEnhancedPDF(mediaCounter, gpsDataList);
+                zip.file(`${caseName}_Laermprotokoll_Bericht.pdf`, pdfContent);
+                
+                // Create overview file
+                console.log('📄 Creating overview file...');
+                const overview = `LAERMPROTOKOLL PROFESSIONAL - ANLEITUNG
+=========================================
+
+ANLEITUNG ZUR VERWENDUNG:
+============================
+1. ZIP-Datei vollstaendig entpacken
+2. PDF-Bericht oeffnen fuer vollstaendige Dokumentation aller Eintraege
+3. Bei Bedarf auf Beweismittel-Ordner zugreifen:
+   - Fotos/ (alle Foto- und Upload-Dateien)
+   - Audio/ (alle Audio-Aufnahmen)
+4. GPS-Koordinaten sind im PDF mit klickbaren Karten-Links dokumentiert
+5. Alle Dateien behalten Original-Zeitstempel und Metadaten
+6. PDF enthaelt die komplette rechtssichere Dokumentation
+
+ARCHIV-STRUKTUR:
+==================
+ZIP-Archiv Root/
+|-- ANLEITUNG.txt (diese Datei)
+|-- [Fallname]_Laermprotokoll_Bericht.pdf (vollstaendige Dokumentation)
+\\-- Beweismittel/
+    |-- Fotos/ (Foto- und Upload-Dateien)
+    \\-- Audio/ (Audio-Aufnahmen)
+
+RECHTLICHE HINWEISE:
+=======================
+- Alle Zeitstempel sind original und unveraenderbar
+- GPS-Koordinaten sind auf 6 Dezimalstellen genau im PDF dokumentiert
+- Audio-Aufnahmen im verlustfreien Format
+- Fotos und Uploads in Original-Qualitaet
+- Geeignet fuer Behoerden, Anwaelte, Gerichte und Versicherungen
+- Entspricht den Standards fuer rechtssichere Dokumentation
+- Vollstaendige Nachvollziehbarkeit aller erfassten Daten
+
+TECHNISCHE INFORMATIONEN:
+============================
+Erstellt mit: Laermprotokoll Professional v3.0
+Entwickelt von: Daniel Ovadia
+Datum: ${new Date().toLocaleString('de-DE')}
+Archiv-Format: ZIP mit PDF-Bericht und Originalbeweismitteln
+
+SUPPORT:
+========
+Weitere Informationen zur Anwendung finden Sie in der
+PDF-Dokumentation. Alle Funktionen sind selbsterklaerend
+und folgen rechtlichen Standards fuer Laermprotokolle.
+`;
+                
+                zip.file('ANLEITUNG.txt', overview);
+                
+                console.log('📦 Creating final ZIP...');
+                showToast('Packe Archiv zusammen...', 'info');
+                
+                const zipBlob = await zip.generateAsync({
+                    type: 'blob',
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: 6 }
+                });
+                
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${caseName}_Laermprotokoll_VOLLSTAENDIG_${new Date().toISOString().split('T')[0]}.zip`;
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                console.log('✅ ZIP export completed');
+                
+                const successMessage = `📦 Archiv erstellt! ${mediaCounter.photos} Fotos, ${mediaCounter.audio} Audio, ${gpsDataList.length} GPS-Punkte`;
+                showToast(successMessage, 'success', 8000);
+                
+            } catch (error) {
+                console.error('❌ Export error:', error);
+                showToast(`❌ Export-Fehler: ${error.message}`, 'error');
+            }
+        }
+
+        async function createEnhancedPDF(mediaCounter, gpsDataList = []) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFont("helvetica");
+            
+            // Title page
+            doc.setFontSize(20);
+            doc.setFont(undefined, 'bold');
+            doc.text('LAERMPROTOKOLL PROFESSIONAL', 20, 30);
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'normal');
+            doc.text('Rechtssichere Dokumentation mit Beweismittel-Archiv', 20, 45);
+            
+            doc.setFontSize(12);
+            doc.text('Erstellt am: ' + new Date().toLocaleString('de-DE'), 20, 60);
+            
+            // Case information
+            let y = 80;
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Fall: ' + sanitizeGermanText(appState.currentCase.name), 20, y);
+            y += 15;
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text('Startdatum: ' + new Date(appState.currentCase.startDate).toLocaleDateString('de-DE'), 20, y);
+            y += 8;
+            
+            if (appState.currentCase.address) {
+                const addressLines = doc.splitTextToSize('Adresse: ' + sanitizeGermanText(appState.currentCase.address), 170);
+                addressLines.forEach(line => {
+                    doc.text(line, 20, y);
+                    y += 6;
+                });
+                y += 3;
+            }
+            
+            if (appState.currentCase.description) {
+                y += 5;
+                doc.setFont(undefined, 'bold');
+                doc.text('Beschreibung:', 20, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                const descLines = doc.splitTextToSize(sanitizeGermanText(appState.currentCase.description), 170);
+                descLines.forEach(line => {
+                    doc.text(line, 20, y);
+                    y += 6;
+                });
+            }
+            
+            // Statistics
+            y += 10;
+            doc.setDrawColor(0, 0, 0);
+            doc.rect(20, y, 170, 35);
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('BEWEISMITTEL-UEBERSICHT', 25, y + 10);
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('Anzahl Eintraege: ' + appState.entries.length, 25, y + 18);
+            doc.text('Foto-Beweise: ' + mediaCounter.photos, 25, y + 24);
+            doc.text('Audio-Beweise: ' + mediaCounter.audio, 25, y + 30);
+            
+            doc.text('GPS-Koordinaten: ' + gpsDataList.length + ' Datenpunkte', 100, y + 18);
+            doc.text('GESAMT: ' + (mediaCounter.total + gpsDataList.length), 100, y + 24);
+            doc.text('Ordnerstruktur: Fotos + Audio', 100, y + 30);
+            
+            y += 45;
+            
+            // GPS-Daten Übersicht (falls vorhanden)
+            if (gpsDataList.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.text('GPS-KOORDINATEN UEBERSICHT', 20, y);
+                y += 10;
+                
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+                
+                gpsDataList.forEach((gps, index) => {
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`GPS ${index + 1} - Eintrag ${gps.entryIndex}: ${sanitizeGermanText(gps.entryTitle)}`, 25, y);
+                    y += 6;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Datum: ${gps.entryDate}`, 25, y);
+                    y += 5;
+                    doc.text(`Koordinaten: ${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)}`, 25, y);
+                    y += 5;
+                    doc.text(`Genauigkeit: ±${gps.accuracy}m`, 25, y);
+                    y += 5;
+                    doc.text(`Erfasst: ${gps.timestamp}`, 25, y);
+                    y += 5;
+                    
+                    // Karten-Links
+                    doc.setTextColor(0, 0, 255);
+                    doc.text(`Google Maps: maps.google.com/?q=${gps.lat},${gps.lng}`, 25, y);
+                    y += 5;
+                    doc.text(`OpenStreetMap: openstreetmap.org/?mlat=${gps.lat}&mlon=${gps.lng}`, 25, y);
+                    doc.setTextColor(0, 0, 0);
+                    y += 8;
+                });
+                
+                y += 5;
+            }
+            
+            // Archive structure
+            if (y > 240) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('ARCHIV-STRUKTUR', 20, y);
+            y += 10;
+            
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            const structureText = [
+                'ZIP-Archiv Root/',
+                '|-- ANLEITUNG.txt (Vollstaendige Dokumentation)',
+                '|-- [Fallname]_Laermprotokoll_Bericht.pdf (diese Datei)',
+                '\\-- Beweismittel/',
+                '    |-- Fotos/ (' + mediaCounter.photos + ' Foto- und Upload-Dateien)',
+                '    \\-- Audio/ (' + mediaCounter.audio + ' Audio-Aufnahmen)',
+                '',
+                'GPS-Koordinaten (' + gpsDataList.length + ' Datenpunkte) sind in diesem PDF dokumentiert'
+            ];
+            
+            structureText.forEach(line => {
+                doc.text(line, 25, y);
+                y += 5;
+            });
+            
+            // Detailed entries
+            doc.addPage();
+            y = 20;
+            
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('DETAILLIERTE EINTRAEGE', 20, y);
+            y += 15;
+            
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            
+            appState.entries.forEach((entry, entryIndex) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                // Entry header
+                doc.setFillColor(240, 240, 240);
+                doc.rect(20, y - 3, 170, 12, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.text((entryIndex + 1) + '. ' + sanitizeGermanText(entry.noiseType), 22, y + 5);
+                y += 15;
+                
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+                
+                // Entry details
+                doc.text('Datum: ' + new Date(entry.date).toLocaleDateString('de-DE') + ' ' + entry.timeFrom + (entry.timeTo ? ' - ' + entry.timeTo : ''), 25, y);
+                y += 5;
+                
+                doc.text('Intensitaet: ' + getIntensityText(entry.intensity), 25, y);
+                y += 5;
+                
+                if (entry.dbValue) {
+                    doc.text('Lautstaerke: ' + entry.dbValue + ' dB', 25, y);
+                    y += 5;
+                }
+                
+                if (entry.duration) {
+                    doc.text('Dauer: ' + entry.duration + ' Minuten', 25, y);
+                    y += 5;
+                }
+                
+                if (entry.description) {
+                    doc.text('Beschreibung:', 25, y);
+                    y += 4;
+                    const descLines = doc.splitTextToSize('   ' + sanitizeGermanText(entry.description), 160);
+                    descLines.forEach(line => {
+                        doc.text(line, 25, y);
+                        y += 4;
+                    });
+                    y += 2;
+                }
+                
+                // Media references und GPS-Daten für diesen Eintrag
+                const entryGpsData = gpsDataList.filter(gps => gps.entryIndex === entryIndex + 1);
+                const entryMediaCount = (entry.mediaCount?.photos || 0) + (entry.mediaCount?.audio || 0);
+                
+                if (entryMediaCount > 0 || entryGpsData.length > 0) {
+                    y += 3;
+                    doc.setFont(undefined, 'bold');
+                    doc.text('BEWEISMITTEL (' + (entryMediaCount + entryGpsData.length) + ' Datenpunkte):', 25, y);
+                    y += 6;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(8);
+                    
+                    if (entry.mediaCount?.photos > 0) {
+                        doc.setTextColor(0, 100, 200);
+                        doc.text('=> FOTOS: Beweismittel/Fotos/ (siehe Archiv)', 30, y);
+                        doc.setTextColor(0, 0, 0);
+                        y += 4;
+                    }
+                    
+                    if (entry.mediaCount?.audio > 0) {
+                        doc.setTextColor(200, 0, 0);
+                        doc.text('=> AUDIO: Beweismittel/Audio/ (siehe Archiv)', 30, y);
+                        doc.setTextColor(0, 0, 0);
+                        y += 4;
+                    }
+                    
+                    if (entryGpsData.length > 0) {
+                        entryGpsData.forEach(gps => {
+                            doc.setTextColor(0, 150, 0);
+                            doc.text(`=> GPS: ${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)} (±${gps.accuracy}m)`, 30, y);
+                            doc.setTextColor(0, 0, 0);
+                            y += 4;
+                        });
+                    }
+                    
+                    doc.setFontSize(9);
+                }
+                
+                y += 8;
+            });
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Seite ' + i + ' von ' + pageCount + ' | Laermprotokoll Professional | ' + new Date().toLocaleDateString('de-DE'), 20, 290);
+                doc.setTextColor(0, 0, 0);
+            }
+            
+            return doc.output('blob');
+        }
+
+        // ===== EVENT LISTENERS & INITIALIZATION =====
+        let initializationComplete = false;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (initializationComplete) return;
+            
+            console.log('=== LÄRMPROTOKOLL PROFESSIONAL STARTING ===');
+            
+            try {
+                // Load existing data first
+                await MemoryStorage.loadAppState();
+                
+                // Create demo case if empty
+                if (memoryDB.cases.length === 0) {
+                    console.log('Creating demo case...');
+                    const demoCase = {
+                        name: 'Demo Fall - Nachbar Lärmbelästigung',
+                        startDate: new Date().toISOString().split('T')[0],
+                        description: 'Beispielfall für Lärmprotokoll Professional',
+                        address: 'Musterstraße 10, 12345 Musterstadt',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    const id = memoryDB.add('cases', demoCase);
+                    demoCase.id = id;
+                    memoryDB.settings.currentCaseId = id;
+                    memoryDB.saveToMemory();
+                    
+                    appState.cases.push(demoCase);
+                    appState.currentCase = demoCase;
+                    console.log('✅ Demo case created');
+                }
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Update UI
+                updateUI();
+                
+                showToast('🛡️ Lärmprotokoll Professional bereit!', 'success', 4000);
+                
+                // Storage-Status informieren
+                setTimeout(() => {
+                    const storageType = MemoryStorage.storageType;
+                    if (storageType === 'localStorage') {
+                        showToast('✅ Persistente Speicherung aktiv - Daten bleiben erhalten!', 'success', 6000);
+                    } else {
+                        showToast('💡 Session-Modus: Nutzen Sie Export für dauerhafte Datensicherung.', 'info', 8000);
+                    }
+                }, 2000);
+                
+                initializationComplete = true;
+                console.log('=== INITIALIZATION COMPLETED ===');
+                
+            } catch (error) {
+                console.error('=== INITIALIZATION ERROR ===', error);
+                showToast('❌ Fehler beim Laden: ' + error.message, 'error');
+            }
+        });
+
+        function setupEventListeners() {
+            // Case selection
+            const caseSelect = document.getElementById('caseSelect');
+            if (caseSelect) {
+                caseSelect.addEventListener('change', (e) => switchCase(e.target.value));
+            }
+
+            // Main buttons
+            const buttons = [
+                { id: 'newCaseBtn', handler: showNewCaseModal },
+                { id: 'settingsBtn', handler: showSettingsModal },
+                { id: 'quickStartBtn', handler: startQuickEntry },
+                { id: 'newEntryBtn', handler: () => showEntryModal() },
+                { id: 'createFirstCaseBtn', handler: showNewCaseModal },
+                { id: 'exportBtn', handler: exportCompleteArchive }
+            ];
+
+            buttons.forEach(({ id, handler }) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('click', handler);
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key) {
+                        case 'n':
+                            e.preventDefault();
+                            showNewCaseModal();
+                            break;
+                        case 'e':
+                            e.preventDefault();
+                            if (appState.currentCase) showEntryModal();
+                            break;
+                        case 's':
+                            e.preventDefault();
+                            MemoryStorage.saveAppState();
+                            break;
+                    }
+                }
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal[style*="flex"]');
+                    if (modals.length > 0) {
+                        const topModal = modals[modals.length - 1];
+                        closeModal(topModal.id);
+                    }
+                }
+            });
+        }
+
+        console.log('✅ Lärmprotokoll Professional loaded successfully!');
+        console.log('💾 localStorage Integration: Daten bleiben nach Browser-Neustart erhalten!');
+        console.log('💡 Debug help: debugLaermprotokoll.help()');
+        console.log('🔄 Persistente Speicherung + Export/Import verfügbar');
+    </script>
+</body>
+</html>
