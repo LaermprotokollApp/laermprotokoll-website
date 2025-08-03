@@ -3,29 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lärmprotokoll Professional – Rechtstext (gilt für App & Website)</title>
-<link rel="icon" href="./assets/logo.png">
+<title>Lärmprotokoll Professional – Rechtstext</title>
+<link rel="icon" href="https://raw.githubusercontent.com/LaermprotokollApp/laermprotokoll-website/main/logo.png">
 <meta name="robots" content="index,follow">
-<meta name="description" content="Einheitlicher Rechtstext (Impressum, Datenschutz, AGB, Hinweise, EU, Support/FAQ/Kontakt) für App & Website von Lärmprotokoll Professional.">
+<meta name="description" content="Professional noise measurement app - Legal information in multiple languages">
 <style>
   html { scroll-behavior: smooth; }
   body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.7; margin: 0; color: #111; }
-  header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eee; z-index: 20; }
+  
+  /* Language Selector Styles */
+  .language-selector {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #F59E0B, #1E293B);
+    color: white;
+    padding: 0.8rem 0;
+    z-index: 25;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .language-selector .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .language-selector a {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .language-selector a:hover, .language-selector a.active {
+    background-color: rgba(255,255,255,0.3);
+    transform: translateY(-1px);
+  }
+  
+  header { position: sticky; top: 64px; background: #fff; border-bottom: 1px solid #eee; z-index: 20; }
   .wrap { max-width: 960px; margin: 0 auto; padding: 0 1rem; }
   .brand { display: flex; align-items: center; gap: .8rem; padding: .8rem 0; }
   .brand img { height: 44px; width: 44px; border-radius: 10px; }
-  nav { position: sticky; top: 64px; background: #fff; z-index: 15; border-bottom: 1px solid #eee; }
+  nav { position: sticky; top: 128px; background: #fff; z-index: 15; border-bottom: 1px solid #eee; }
   nav .menu { display: flex; flex-wrap: wrap; gap: .5rem; padding: .5rem 0; }
   nav .menu a { text-decoration: none; border: 1px solid #e5e7eb; padding: .35rem .6rem; border-radius: .4rem; }
   nav .menu a:hover { background: #f3f4f6; }
+  
+  /* Content Sections */
   main { padding: 1rem 0 3rem; }
+  .content-section { display: none; }
+  .content-section.active { display: block; }
+  
   h1 { font-size: 1.6rem; margin: 1rem 0 .6rem; }
+  h2 { color: #1E293B; border-bottom: 2px solid #F59E0B; padding-bottom: 5px; margin-top: 2rem; }
   .meta { color: #6b7280; font-size: .9rem; }
   article p { margin: .7rem 0; }
   article p strong { display: inline-block; min-width: 13ch; }
+  
+  /* Special Styling */
+  .important {
+    background-color: #FEF3C7;
+    border-left: 4px solid #F59E0B;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .contact-info {
+    background-color: #F8FAFC;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    border: 1px solid #E5E7EB;
+  }
+  
   footer { color: #6b7280; padding: 2rem 0; border-top: 1px solid #eee; }
-
-  /* Consent Banner (display-only settings) */
+  
+  /* Consent Banner */
   #consent-banner {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
     background: #111827; color: #fff; padding: 1rem;
@@ -37,82 +96,335 @@
   .btn { border: 1px solid #374151; background: #1f2937; color: #fff; padding: .45rem .8rem; cursor: pointer; border-radius: .5rem; }
   .btn.primary { background: #2563eb; border-color: #1d4ed8; }
   .btn:hover { filter: brightness(1.1); }
-  /* Modal (view-only) */
+  
+  /* Modal */
   #consent-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.5); z-index: 10000; }
   #consent-modal .card { background: #fff; color: #111; max-width: 640px; width: calc(100% - 2rem); border-radius: .8rem; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
   #consent-modal h3 { margin-top: .2rem; }
   .row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid #eee; }
   .badge { font-size: .8rem; padding: .2rem .4rem; border-radius: .4rem; background: #e5e7eb; }
   .link { color: #2563eb; text-decoration: none; }
+  
+  @media (max-width: 768px) {
+    .language-selector .wrap { gap: 0.3rem; }
+    .language-selector a { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+  }
 </style>
 </head>
 <body>
+
+<!-- Language Selector -->
+<div class="language-selector">
+  <div class="wrap">
+    <a href="#" data-lang="de" class="active">🇩🇪 Deutsch</a>
+    <a href="#" data-lang="en">🇬🇧 English</a>
+    <a href="#" data-lang="fr">🇫🇷 Français</a>
+    <a href="#" data-lang="es">🇪🇸 Español</a>
+    <a href="#" data-lang="it">🇮🇹 Italiano</a>
+  </div>
+</div>
+
 <header>
   <div class="wrap">
     <div class="brand">
-      <img src="./assets/logo.png" alt="Lärmprotokoll Professional – Logo">
+      <img src="https://raw.githubusercontent.com/LaermprotokollApp/laermprotokoll-website/main/logo.png" alt="Lärmprotokoll Professional – Logo">
       <div>
-        <div style="font-weight:700; letter-spacing:.02em;">LÄRMPROTOKOLL</div>
-        <div style="font-size:.8rem; letter-spacing:.18em;">PROFESSIONAL</div>
+        <div style="font-weight:700; letter-spacing:.02em;" id="brand-title">LÄRMPROTOKOLL</div>
+        <div style="font-size:.8rem; letter-spacing:.18em;" id="brand-subtitle">PROFESSIONAL</div>
       </div>
     </div>
   </div>
   <div class="wrap">
     <nav aria-label="Seitennavigation">
-      <div class="menu">
-        <a href="#impressum">Impressum</a>
-        <a href="#datenschutz">Datenschutz</a>
-        <a href="#agb">AGB</a>
-        <a href="#hinweise">Hinweise</a>
-        <a href="#eu">EU</a>
-        <a href="#support">Support/FAQ/Kontakt</a>
+      <div class="menu" id="nav-menu">
+        <a href="#impressum" data-section="impressum">Impressum</a>
+        <a href="#datenschutz" data-section="datenschutz">Datenschutz</a>
+        <a href="#agb" data-section="agb">AGB</a>
+        <a href="#hinweise" data-section="hinweise">Hinweise</a>
+        <a href="#eu" data-section="eu">EU</a>
+        <a href="#support" data-section="support">Support/FAQ/Kontakt</a>
       </div>
     </nav>
   </div>
 </header>
 
 <main class="wrap">
-  <h1 id="impressum">Impressum</h1>
-  <p class="meta">Stand: 29. Juli 2025</p>
+  <!-- GERMAN CONTENT -->
+  <div id="content-de" class="content-section active">
+    <h1 id="impressum">Impressum</h1>
+    <p class="meta">Stand: 29. Juli 2025</p>
 
-  <article>
-    <p><strong>Verantwortlich:</strong> Daniel Ovadia, Eugen‑Richter‑Str. 159, 76187 Karlsruhe, Deutschland. Kontakt: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a>. Support ausschließlich per E‑Mail, keine Telefon‑Hotline.</p>
+    <article>
+      <p><strong>Verantwortlich:</strong> Daniel Ovadia, Eugen‑Richter‑Str. 159, 76187 Karlsruhe, Deutschland. Kontakt: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a>. Support ausschließlich per E‑Mail, keine Telefon‑Hotline.</p>
 
-    <p><strong>Gegenstand:</strong> Die App „Lärmprotokoll Professional“ dient der professionellen Messung und Dokumentation von Lärm (Dezibel‑Werte, Audio, Foto/Video, GPS‑Ortung, Zeitstempel, Notizen). Die Website stellt rechtliche Informationen bereit. Es erfolgt keine Rechtsberatung; eine gerichtliche Verwertbarkeit wird nicht zugesichert.</p>
+      <p><strong>Gegenstand:</strong> Die App „Lärmprotokoll Professional" dient der professionellen Messung und Dokumentation von Lärm (Dezibel‑Werte, Audio, Foto/Video, GPS‑Ortung, Zeitstempel, Notizen). Die Website stellt rechtliche Informationen bereit. Es erfolgt keine Rechtsberatung; eine gerichtliche Verwertbarkeit wird nicht zugesichert.</p>
 
-    <h2 id="datenschutz">Datenschutz (gilt für App & Website)</h2>
-    <p><strong>Grundsatz:</strong> Wir verarbeiten so wenige personenbezogene Daten wie möglich. App‑Daten werden ausschließlich lokal auf Ihrem Endgerät gespeichert und nur auf Ihre Initiative exportiert (PDF/JSON/ZIP). Die Website wird über GitHub Pages (GitHub, Inc.) bereitgestellt.</p>
+      <h2 id="datenschutz">Datenschutz (gilt für App & Website)</h2>
+      
+      <div class="important">
+        <h3>🔒 Wichtiger Hinweis zum Datenschutz</h3>
+        <p><strong>Alle Ihre Daten bleiben auf Ihrem Gerät!</strong> Lärmprotokoll Professional überträgt keine persönlichen Daten automatisch an unsere Server. Ihre Privatsphäre hat höchste Priorität.</p>
+      </div>
 
-    <p><strong>App (lokal):</strong> Verarbeitete Daten: Dezibel‑Messwerte, Audio, Fotos/Videos, präziser Standort (GPS), Zeitstempel, Notizen, Medien‑Metadaten. <em>Zwecke</em>: Lärmprotokoll, Beweisdokumentation, Export. <em>Rechtsgrundlagen</em>: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an strukturierter Beweissicherung). <em>Berechtigungen</em>: Mikrofon/Kamera/Standort nur zur Aufnahme/Zuordnung; ab Android 13 Medienauswahl via Photo Picker empfohlen. <em>Rechte Dritter</em>: Beachten Sie Persönlichkeitsrechte/Recht am eigenen Bild (§§ 22 ff. KUG).</p>
+      <p><strong>Grundsatz:</strong> Wir verarbeiten so wenige personenbezogene Daten wie möglich. App‑Daten werden ausschließlich lokal auf Ihrem Endgerät gespeichert und nur auf Ihre Initiative exportiert (PDF/JSON/ZIP). Die Website wird über GitHub Pages (GitHub, Inc.) bereitgestellt.</p>
 
-    <p><strong>Website/Hosting:</strong> Beim Aufruf der Seiten können durch den Hoster <em>GitHub Pages</em> technisch notwendige Verbindungsdaten verarbeitet werden (IP‑Adresse, Datum/Uhrzeit, aufgerufene URL, Referrer, User‑Agent, HTTP‑Status, übertragene Datenmenge) zur sicheren, funktionsfähigen Bereitstellung und Störungsanalyse. <em>Rechtsgrundlage</em>: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse). <em>Drittlandübermittlung</em>: USA (EU‑US Data Privacy Framework/geeignete Garantien gem. Art. 44 ff. DSGVO). <em>Speicherdauer</em>: i. d. R. nur solange wie für Betrieb/Sicherheit/Fehleranalyse erforderlich. <em>Cookies/Tracking</em>: Keine eigenen Cookies, kein Tracking/Analytics. GitHub‑Datenschutz: <a class="link" href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">Privacy Statement</a>.</p>
+      <h3>Verarbeitete Daten in der App</h3>
+      <ul>
+        <li><strong>Lärmprotokolle:</strong> Datum, Zeit, Standort, Dezibel-Werte, Beschreibungen</li>
+        <li><strong>Medien:</strong> Audio-/Video-/Fotoaufnahmen (nur bei Ihrer aktiven Nutzung)</li>
+        <li><strong>GPS-Koordinaten:</strong> Nur wenn Sie die Standortfunktion aktivieren</li>
+        <li><strong>App-Einstellungen:</strong> Sprache, Lärmtypen, Präferenzen</li>
+      </ul>
 
-    <h2 id="agb">AGB</h2>
-    <p><strong>Nutzerverantwortung:</strong> Sie entscheiden, welche Inhalte (Audio/Fotos/Videos/GPS/Notizen) Sie erfassen und exportieren. Speicherung lokal; wir haben keinen Zugriff. Sie sind für die Rechtmäßigkeit Ihrer Aufnahmen verantwortlich (insb. Persönlichkeitsrecht, §§ 22 ff. KUG). Exporte können sensible Inhalte enthalten und sind von Ihnen sicher zu verwahren.</p>
-    <p><strong>Widerruf (digitale Inhalte):</strong> Sofern Sie Verbraucher sind, besteht grundsätzlich ein Widerrufsrecht. Dieses erlischt, wenn Sie der sofortigen Ausführung zustimmen (§ 356 Abs. 5 BGB). In‑App‑Käufe werden über den jeweiligen App‑Store abgewickelt; es gelten die Store‑Bedingungen.</p>
-    <p><strong>Haftung:</strong> Unbeschränkte Haftung bei Verletzung von Leben, Körper, Gesundheit. Im Übrigen haften wir nur bei Vorsatz und grober Fahrlässigkeit; eine weitergehende Haftung besteht nicht.</p>
+      <h3>Berechtigungen und deren Zweck</h3>
+      <p><strong>Mikrofon-Berechtigung:</strong> Dezibel-Messung und Audioaufnahmen für Lärmprotokolle. Verarbeitung ausschließlich lokal auf Ihrem Gerät.</p>
+      <p><strong>Kamera-Berechtigung:</strong> Foto- und Videoaufnahmen als Beweismittel. Beachten Sie Persönlichkeitsrechte und §§ 22 ff. KUG.</p>
+      <p><strong>Standort-Berechtigung:</strong> GPS-Koordinaten für Lärmprotokoll-Lokalisierung. Nur während der App-Verwendung.</p>
 
-    <h2 id="hinweise">Hinweise (Website)</h2>
-    <p><strong>Inhalte/Links:</strong> Eigene Inhalte nach § 7 Abs. 1 TMG; keine Überwachungspflicht fremder Informationen (§§ 8–10 TMG). Für Inhalte verlinkter externer Seiten sind die jeweiligen Anbieter verantwortlich.</p>
-    <p><strong>Urheberrecht:</strong> Inhalte dieser Website unterliegen deutschem Urheberrecht; Nutzungen außerhalb gesetzlicher Schranken bedürfen vorheriger Zustimmung.</p>
+      <p><strong>Website/Hosting:</strong> Beim Aufruf der Seiten können durch den Hoster <em>GitHub Pages</em> technisch notwendige Verbindungsdaten verarbeitet werden (IP‑Adresse, Datum/Uhrzeit, aufgerufene URL, Referrer, User‑Agent, HTTP‑Status, übertragene Datenmenge) zur sicheren, funktionsfähigen Bereitstellung und Störungsanalyse. <em>Rechtsgrundlage</em>: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse). <em>Drittlandübermittlung</em>: USA (EU‑US Data Privacy Framework/geeignete Garantien gem. Art. 44 ff. DSGVO). <em>Speicherdauer</em>: i. d. R. nur solange wie für Betrieb/Sicherheit/Fehleranalyse erforderlich. <em>Cookies/Tracking</em>: Keine eigenen Cookies, kein Tracking/Analytics. GitHub‑Datenschutz: <a class="link" href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">Privacy Statement</a>.</p>
 
-    <h2 id="eu">EU</h2>
-    <p><strong>EU‑ODR:</strong> Plattform der EU‑Kommission zur Online‑Streitbeilegung (OS): <a class="link" href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
-    <p><strong>Verbraucherstreitbeilegung:</strong> Wir sind <u>nicht bereit</u> und <u>nicht verpflichtet</u>, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+      <h3>Ihre Rechte (DSGVO)</h3>
+      <ul>
+        <li><strong>Auskunft</strong> über gespeicherte Daten (Art. 15 DSGVO)</li>
+        <li><strong>Berichtigung</strong> unrichtiger Daten (Art. 16 DSGVO)</li>
+        <li><strong>Löschung</strong> Ihrer Daten (Art. 17 DSGVO)</li>
+        <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
+        <li><strong>Beschwerde</strong> bei Aufsichtsbehörden</li>
+      </ul>
 
-    <h2 id="support">Support/FAQ/Kontakt</h2>
-    <p><strong>Kontakt:</strong> <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a> (Antwort i. d. R. 24–48 h). Support ausschließlich per E‑Mail, keine Telefon‑Hotline.</p>
-    <p><strong>FAQ‑Hinweise:</strong> Alle App‑Daten bleiben lokal; Exporte sicher verwahren. Bei verweigerten Berechtigungen sind bestimmte Funktionen eingeschränkt. Photo Picker (Android 13+) für Medienauswahl empfohlen.</p>
+      <h2 id="agb">AGB</h2>
+      <p><strong>Nutzerverantwortung:</strong> Sie entscheiden, welche Inhalte (Audio/Fotos/Videos/GPS/Notizen) Sie erfassen und exportieren. Speicherung lokal; wir haben keinen Zugriff. Sie sind für die Rechtmäßigkeit Ihrer Aufnahmen verantwortlich (insb. Persönlichkeitsrecht, §§ 22 ff. KUG). Exporte können sensible Inhalte enthalten und sind von Ihnen sicher zu verwahren.</p>
+      
+      <div class="important">
+        <h3>⚠️ Wichtige Rechtliche Hinweise</h3>
+        <ul>
+          <li><strong>Persönlichkeitsrechte:</strong> Nehmen Sie keine Personen ohne deren Einverständnis auf</li>
+          <li><strong>Privaträume:</strong> Beachten Sie die Unverletzlichkeit der Wohnung (Art. 13 GG)</li>
+          <li><strong>Nachbarschaftsrecht:</strong> Lärmprotokolle sollten vom eigenen Grundstück erstellt werden</li>
+          <li><strong>Beweiskraft:</strong> Protokolle können als Beweismittel dienen, rechtliche Beratung empfohlen</li>
+        </ul>
+      </div>
+      
+      <p><strong>Widerruf (digitale Inhalte):</strong> Sofern Sie Verbraucher sind, besteht grundsätzlich ein Widerrufsrecht. Dieses erlischt, wenn Sie der sofortigen Ausführung zustimmen (§ 356 Abs. 5 BGB). In‑App‑Käufe werden über den jeweiligen App‑Store abgewickelt; es gelten die Store‑Bedingungen.</p>
+      <p><strong>Haftung:</strong> Unbeschränkte Haftung bei Verletzung von Leben, Körper, Gesundheit. Im Übrigen haften wir nur bei Vorsatz und grober Fahrlässigkeit; eine weitergehende Haftung besteht nicht.</p>
 
-    <p class="meta">© Lärmprotokoll Professional • Daniel Ovadia • Karlsruhe, Deutschland</p>
-  </article>
+      <h2 id="hinweise">Hinweise (Website)</h2>
+      <p><strong>Inhalte/Links:</strong> Eigene Inhalte nach § 7 Abs. 1 TMG; keine Überwachungspflicht fremder Informationen (§§ 8–10 TMG). Für Inhalte verlinkter externer Seiten sind die jeweiligen Anbieter verantwortlich.</p>
+      <p><strong>Urheberrecht:</strong> Inhalte dieser Website unterliegen deutschem Urheberrecht; Nutzungen außerhalb gesetzlicher Schranken bedürfen vorheriger Zustimmung.</p>
+
+      <h2 id="eu">EU</h2>
+      <p><strong>EU‑ODR:</strong> Plattform der EU‑Kommission zur Online‑Streitbeilegung (OS): <a class="link" href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+      <p><strong>Verbraucherstreitbeilegung:</strong> Wir sind <u>nicht bereit</u> und <u>nicht verpflichtet</u>, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+
+      <h2 id="support">Support/FAQ/Kontakt</h2>
+      <div class="contact-info">
+        <p><strong>Kontakt:</strong> <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a> (Antwort i. d. R. 24–48 h). Support ausschließlich per E‑Mail, keine Telefon‑Hotline.</p>
+      </div>
+      <p><strong>FAQ‑Hinweise:</strong> Alle App‑Daten bleiben lokal; Exporte sicher verwahren. Bei verweigerten Berechtigungen sind bestimmte Funktionen eingeschränkt. Photo Picker (Android 13+) für Medienauswahl empfohlen.</p>
+
+      <p class="meta">© Lärmprotokoll Professional • Daniel Ovadia • Karlsruhe, Deutschland</p>
+    </article>
+  </div>
+
+  <!-- ENGLISH CONTENT -->
+  <div id="content-en" class="content-section">
+    <h1>Legal Information</h1>
+    <p class="meta">Last updated: July 29, 2025</p>
+
+    <article>
+      <div class="contact-info">
+        <h2>📞 Responsible Party</h2>
+        <p><strong>Daniel Ovadia</strong><br>
+        Eugen‑Richter‑Str. 159<br>
+        76187 Karlsruhe, Germany<br>
+        E-Mail: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a><br>
+        Support exclusively via email, no phone hotline.</p>
+      </div>
+
+      <h2 id="privacy-en">Privacy Policy (App & Website)</h2>
+      
+      <div class="important">
+        <h3>🔒 Important Privacy Notice</h3>
+        <p><strong>All your data stays on your device!</strong> Noise Protocol Professional does not automatically transmit any personal data to our servers. Your privacy is our highest priority.</p>
+      </div>
+
+      <h3>Data Processing Overview</h3>
+      <p>This app was developed to create and store noise protocols <strong>exclusively locally on your device</strong>. We use the principles of data minimization and privacy-by-design.</p>
+
+      <h3>What Data is Processed?</h3>
+      <h4>Locally Stored Data</h4>
+      <ul>
+        <li><strong>Noise Protocols:</strong> Date, time, location, decibel values, descriptions</li>
+        <li><strong>Media:</strong> Audio/video/photo recordings (only when actively used by you)</li>
+        <li><strong>GPS Coordinates:</strong> Only when you activate location services</li>
+        <li><strong>App Settings:</strong> Language, noise types, preferences</li>
+      </ul>
+
+      <h4>No Data Transmission</h4>
+      <p>The app does <strong>not transmit any of your personal data</strong> to external servers, except when:</p>
+      <ul>
+        <li>You consciously export data (e.g., via email)</li>
+        <li>You use Google Play Billing for premium features</li>
+        <li>Crash reports (anonymized, only with your consent)</li>
+      </ul>
+
+      <h3>Permissions and Their Purpose</h3>
+      <p><strong>Microphone Permission:</strong> Decibel measurement and audio recordings for noise protocols. Processing exclusively local on your device.</p>
+      <p><strong>Camera Permission:</strong> Photo and video recordings as evidence. Please observe personality rights.</p>
+      <p><strong>Location Permission:</strong> GPS coordinates for noise protocol localization. Only during app usage.</p>
+
+      <h3>Your Rights (GDPR)</h3>
+      <ul>
+        <li><strong>Access</strong> to stored data (Art. 15 GDPR)</li>
+        <li><strong>Rectification</strong> of incorrect data (Art. 16 GDPR)</li>
+        <li><strong>Erasure</strong> of your data (Art. 17 GDPR)</li>
+        <li><strong>Data portability</strong> (Art. 20 GDPR)</li>
+        <li><strong>Complaint</strong> to supervisory authorities</li>
+      </ul>
+
+      <h2>Terms of Service</h2>
+      <p><strong>User Responsibility:</strong> You decide which content (audio/photos/videos/GPS/notes) you capture and export. Storage is local; we have no access. You are responsible for the legality of your recordings.</p>
+
+      <h2>Contact & Support</h2>
+      <div class="contact-info">
+        <p><strong>Contact:</strong> <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+        <p>Response time: usually 24-48 hours. Support exclusively via email.</p>
+      </div>
+
+      <p class="meta">© Noise Protocol Professional • Daniel Ovadia • Karlsruhe, Germany</p>
+    </article>
+  </div>
+
+  <!-- FRENCH CONTENT -->
+  <div id="content-fr" class="content-section">
+    <h1>Informations Légales</h1>
+    <p class="meta">Dernière mise à jour: 29 juillet 2025</p>
+
+    <article>
+      <div class="contact-info">
+        <h2>📞 Responsable</h2>
+        <p><strong>Daniel Ovadia</strong><br>
+        Eugen‑Richter‑Str. 159<br>
+        76187 Karlsruhe, Allemagne<br>
+        E-Mail: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <h2>Politique de Confidentialité</h2>
+      
+      <div class="important">
+        <h3>🔒 Avis Important de Confidentialité</h3>
+        <p><strong>Toutes vos données restent sur votre appareil!</strong> Protocole Anti-Bruit Professionnel ne transmet automatiquement aucune donnée personnelle à nos serveurs.</p>
+      </div>
+
+      <h3>Aperçu du Traitement des Données</h3>
+      <p>Cette application a été développée pour créer et stocker des protocoles de bruit <strong>exclusivement localement sur votre appareil</strong>.</p>
+
+      <h3>Vos Droits (RGPD)</h3>
+      <ul>
+        <li><strong>Accès</strong> aux données stockées (Art. 15 RGPD)</li>
+        <li><strong>Rectification</strong> des données incorrectes (Art. 16 RGPD)</li>
+        <li><strong>Effacement</strong> de vos données (Art. 17 RGPD)</li>
+        <li><strong>Portabilité</strong> des données (Art. 20 RGPD)</li>
+      </ul>
+
+      <h2>Contact</h2>
+      <div class="contact-info">
+        <p>Pour les questions de confidentialité: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <p class="meta">© Protocole Anti-Bruit Professionnel • Daniel Ovadia • Karlsruhe, Allemagne</p>
+    </article>
+  </div>
+
+  <!-- SPANISH CONTENT -->
+  <div id="content-es" class="content-section">
+    <h1>Información Legal</h1>
+    <p class="meta">Última actualización: 29 de julio de 2025</p>
+
+    <article>
+      <div class="contact-info">
+        <h2>📞 Responsable</h2>
+        <p><strong>Daniel Ovadia</strong><br>
+        Eugen‑Richter‑Str. 159<br>
+        76187 Karlsruhe, Alemania<br>
+        E-Mail: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <h2>Política de Privacidad</h2>
+      
+      <div class="important">
+        <h3>🔒 Aviso Importante de Privacidad</h3>
+        <p><strong>¡Todos sus datos permanecen en su dispositivo!</strong> Protocolo Anti-Ruido Profesional no transmite automáticamente datos personales a nuestros servidores.</p>
+      </div>
+
+      <h3>Resumen del Procesamiento de Datos</h3>
+      <p>Esta aplicación fue desarrollada para crear y almacenar protocolos de ruido <strong>exclusivamente de forma local en su dispositivo</strong>.</p>
+
+      <h3>Sus Derechos (GDPR)</h3>
+      <ul>
+        <li><strong>Acceso</strong> a datos almacenados (Art. 15 GDPR)</li>
+        <li><strong>Rectificación</strong> de datos incorrectos (Art. 16 GDPR)</li>
+        <li><strong>Eliminación</strong> de sus datos (Art. 17 GDPR)</li>
+        <li><strong>Portabilidad</strong> de datos (Art. 20 GDPR)</li>
+      </ul>
+
+      <h2>Contacto</h2>
+      <div class="contact-info">
+        <p>Para preguntas de privacidad: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <p class="meta">© Protocolo Anti-Ruido Profesional • Daniel Ovadia • Karlsruhe, Alemania</p>
+    </article>
+  </div>
+
+  <!-- ITALIAN CONTENT -->
+  <div id="content-it" class="content-section">
+    <h1>Informazioni Legali</h1>
+    <p class="meta">Ultimo aggiornamento: 29 luglio 2025</p>
+
+    <article>
+      <div class="contact-info">
+        <h2>📞 Responsabile</h2>
+        <p><strong>Daniel Ovadia</strong><br>
+        Eugen‑Richter‑Str. 159<br>
+        76187 Karlsruhe, Germania<br>
+        E-Mail: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <h2>Informativa sulla Privacy</h2>
+      
+      <div class="important">
+        <h3>🔒 Avviso Importante sulla Privacy</h3>
+        <p><strong>Tutti i vostri dati rimangono sul vostro dispositivo!</strong> Protocollo Anti-Rumore Professionale non trasmette automaticamente dati personali ai nostri server.</p>
+      </div>
+
+      <h3>Panoramica del Trattamento Dati</h3>
+      <p>Questa applicazione è stata sviluppata per creare e memorizzare protocolli di rumore <strong>esclusivamente localmente sul vostro dispositivo</strong>.</p>
+
+      <h3>I Vostri Diritti (GDPR)</h3>
+      <ul>
+        <li><strong>Accesso</strong> ai dati memorizzati (Art. 15 GDPR)</li>
+        <li><strong>Rettifica</strong> dei dati incorretti (Art. 16 GDPR)</li>
+        <li><strong>Cancellazione</strong> dei vostri dati (Art. 17 GDPR)</li>
+        <li><strong>Portabilità</strong> dei dati (Art. 20 GDPR)</li>
+      </ul>
+
+      <h2>Contatto</h2>
+      <div class="contact-info">
+        <p>Per domande sulla privacy: <a class="link" href="mailto:Laermprotokollprofessionell@outlook.de">Laermprotokollprofessionell@outlook.de</a></p>
+      </div>
+
+      <p class="meta">© Protocollo Anti-Rumore Professionale • Daniel Ovadia • Karlsruhe, Germania</p>
+    </article>
+  </div>
+
 </main>
 
 <footer class="wrap">
-  <a id="manage-consent" href="#" class="link" aria-haspopup="dialog">Datenschutz‑Einstellungen (Anzeige)</a>
+  <a id="manage-consent" href="#" class="link" aria-haspopup="dialog" data-i18n="footer.consent">Datenschutz‑Einstellungen (Anzeige)</a>
 </footer>
 
-<!-- Consent Banner & View-only Modal -->
+<!-- Consent Banner & Modal (unchanged from original) -->
 <div id="consent-banner" role="region" aria-label="Datenschutzhinweis" style="display:none;">
   <div class="inner">
     <p><strong>Datenschutzhinweis:</strong> Auf dieser Website werden nur <em>technisch notwendige</em> Hosting‑Logs durch GitHub Pages verarbeitet. 
@@ -137,6 +449,7 @@
 
 <script>
 (function() {
+  // Consent Banner Logic (unchanged)
   const KEY = "lp_consent_viewonly_v1";
   const banner = document.getElementById('consent-banner');
   const modal = document.getElementById('consent-modal');
@@ -160,6 +473,138 @@
   btnDetails.addEventListener('click', function(){ openModal(); });
   btnModalClose.addEventListener('click', function(){ closeModal(); });
   openSettings.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+
+  // Language Switching Logic
+  const langButtons = document.querySelectorAll('.language-selector a');
+  const contentSections = document.querySelectorAll('.content-section');
+  const navMenu = document.getElementById('nav-menu');
+  const brandTitle = document.getElementById('brand-title');
+  const brandSubtitle = document.getElementById('brand-subtitle');
+
+  // Navigation translations
+  const navTranslations = {
+    de: {
+      impressum: 'Impressum',
+      datenschutz: 'Datenschutz',
+      agb: 'AGB',
+      hinweise: 'Hinweise',
+      eu: 'EU',
+      support: 'Support/FAQ/Kontakt'
+    },
+    en: {
+      impressum: 'Imprint',
+      datenschutz: 'Privacy',
+      agb: 'Terms',
+      hinweise: 'Legal Notice',
+      eu: 'EU',
+      support: 'Support/FAQ/Contact'
+    },
+    fr: {
+      impressum: 'Mentions légales',
+      datenschutz: 'Confidentialité',
+      agb: 'CGU',
+      hinweise: 'Avis légal',
+      eu: 'UE',
+      support: 'Support/FAQ/Contact'
+    },
+    es: {
+      impressum: 'Información legal',
+      datenschutz: 'Privacidad',
+      agb: 'Términos',
+      hinweise: 'Aviso legal',
+      eu: 'UE',
+      support: 'Soporte/FAQ/Contacto'
+    },
+    it: {
+      impressum: 'Informazioni legali',
+      datenschutz: 'Privacy',
+      agb: 'Termini',
+      hinweise: 'Note legali',
+      eu: 'UE',
+      support: 'Supporto/FAQ/Contatto'
+    }
+  };
+
+  // Brand translations
+  const brandTranslations = {
+    de: { title: 'LÄRMPROTOKOLL', subtitle: 'PROFESSIONAL' },
+    en: { title: 'NOISE PROTOCOL', subtitle: 'PROFESSIONAL' },
+    fr: { title: 'PROTOCOLE ANTI-BRUIT', subtitle: 'PROFESSIONNEL' },
+    es: { title: 'PROTOCOLO ANTI-RUIDO', subtitle: 'PROFESIONAL' },
+    it: { title: 'PROTOCOLLO ANTI-RUMORE', subtitle: 'PROFESSIONALE' }
+  };
+
+  function switchLanguage(lang) {
+    // Hide all content sections
+    contentSections.forEach(section => section.classList.remove('active'));
+    
+    // Show selected language section
+    const targetSection = document.getElementById(`content-${lang}`);
+    if (targetSection) {
+      targetSection.classList.add('active');
+    }
+
+    // Update language selector
+    langButtons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+
+    // Update navigation
+    const translations = navTranslations[lang];
+    if (translations) {
+      const navLinks = navMenu.querySelectorAll('a');
+      navLinks.forEach(link => {
+        const section = link.getAttribute('data-section');
+        if (section && translations[section]) {
+          link.textContent = translations[section];
+        }
+      });
+    }
+
+    // Update brand
+    const brandTrans = brandTranslations[lang];
+    if (brandTrans) {
+      brandTitle.textContent = brandTrans.title;
+      brandSubtitle.textContent = brandTrans.subtitle;
+    }
+
+    // Update HTML lang attribute
+    document.documentElement.lang = lang;
+
+    // Save language preference
+    try {
+      localStorage.setItem('lp_language', lang);
+    } catch(e) {}
+  }
+
+  // Language switching event listeners
+  langButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const lang = this.getAttribute('data-lang');
+      switchLanguage(lang);
+    });
+  });
+
+  // Load saved language preference
+  try {
+    const savedLang = localStorage.getItem('lp_language');
+    if (savedLang && ['de', 'en', 'fr', 'es', 'it'].includes(savedLang)) {
+      switchLanguage(savedLang);
+    }
+  } catch(e) {}
+
+  // Smooth scrolling for navigation
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('nav a[href^="#"]')) {
+      e.preventDefault();
+      const targetId = e.target.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  });
+
 })();
 </script>
 
