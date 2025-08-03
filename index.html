@@ -127,7 +127,7 @@
 <header>
   <div class="wrap">
     <div class="brand">
-      <img src="./assets/logo.png" alt="Lärmprotokoll Professional – Logo">
+      <img src="./assets/logo.png?v=1" alt="Lärmprotokoll Professional – Logo" onerror="this.src='./logo.png'; this.onerror=null;">
       <div>
         <div style="font-weight:700; letter-spacing:.02em;" id="brand-title">LÄRMPROTOKOLL</div>
         <div style="font-size:.8rem; letter-spacing:.18em;" id="brand-subtitle">PROFESSIONAL</div>
@@ -539,7 +539,7 @@
       datenschutz: 'Confidentialité',
       agb: 'CGU',
       hinweise: 'Avis légal',
-      eu: 'UE',
+      eu: 'EU',
       support: 'Support/FAQ/Contact'
     },
     es: {
@@ -547,7 +547,7 @@
       datenschutz: 'Privacidad',
       agb: 'Términos',
       hinweise: 'Aviso legal',
-      eu: 'UE',
+      eu: 'EU',
       support: 'Soporte/FAQ/Contacto'
     },
     it: {
@@ -555,7 +555,7 @@
       datenschutz: 'Privacy',
       agb: 'Termini',
       hinweise: 'Note legali',
-      eu: 'UE',
+      eu: 'EU',
       support: 'Supporto/FAQ/Contatto'
     }
   };
@@ -589,7 +589,8 @@
       const section = link.getAttribute('data-section');
       if (section) {
         // Update href to point to correct language section
-        link.href = `#${section}${lang === 'de' ? '' : '-' + lang}`;
+        const newHref = lang === 'de' ? `#${section}` : `#${section}-${lang}`;
+        link.href = newHref;
         
         // Update text if translation exists
         if (navTranslations[lang] && navTranslations[lang][section]) {
