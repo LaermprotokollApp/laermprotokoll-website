@@ -2729,6 +2729,36 @@
             showToast('Sofort-Protokoll abgebrochen', 'warning');
         }
 
+        // ===== GLOBALLY ACCESSIBLE FUNCTIONS =====
+        // Make sure all functions are globally accessible
+        window.showNewCaseModal = showNewCaseModal;
+        window.createCase = createCase;
+        window.switchCase = switchCase;
+        window.showEntryModal = showEntryModal;
+        window.saveEntry = saveEntry;
+        window.editEntry = editEntry;
+        window.deleteEntry = deleteEntry;
+        window.startQuickEntry = startQuickEntry;
+        window.stopQuickEntry = stopQuickEntry;
+        window.cancelQuickEntry = cancelQuickEntry;
+        window.saveQuickEntry = saveQuickEntry;
+        window.quickAddNote = quickAddNote;
+        window.showSettingsModal = showSettingsModal;
+        window.saveSettings = saveSettings;
+        window.exportCompleteArchive = exportCompleteArchive;
+        window.exportAppData = exportAppData;
+        window.importAppData = importAppData;
+        window.addCustomNoiseType = addCustomNoiseType;
+        window.removeCustomNoiseType = removeCustomNoiseType;
+        window.closeModal = closeModal;
+        window.showCameraModal = showCameraModal;
+        window.capturePhoto = capturePhoto;
+        window.switchCamera = switchCamera;
+        window.toggleAudio = toggleAudio;
+        window.captureGPS = captureGPS;
+        window.uploadMedia = uploadMedia;
+        window.removeMedia = removeMedia;
+
         // ===== SETTINGS =====
         function showSettingsModal() {
             const content = `
